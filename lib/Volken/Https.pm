@@ -1,13 +1,11 @@
-package Volken::Http;
+package Volken::Https;
 
 use strict;
 use warnings;
 
-use IO::Socket::INET;
-
-sub unchunk;
-sub trim;
-sub uri_encode;
+use IO::Socket::SSL;
+use Mozilla::CA;
+use URI::Escape;
 
 sub new{
     my ($class) = @_;
@@ -21,7 +19,7 @@ sub get{
     my ($self) = @_;
     my $host = $self->{"host"};
     my $port = $self->{"port"};
-    $port = 80 unless(defined($port));
+    $port = 443 unless(defined($port));
     my %param_map = %{ $self->{"params"}};
     my $req_uri = $self->{"url"};
     my $first_flag = 1;
@@ -54,11 +52,14 @@ sub get{
 	$request_head .= sprintf "%s: %s\r\n", $header_key, $header_value;
     }
     
-    my $socket = IO::Socket::INET->new(
-	PeerHost=>$host,
-	PeerPort=>$port,
-	Proto=>"tcp"
-	) or die "Error in socket creation: $!\n";
+    my $socket = IO::Socket::SSL->new(
+	PeerHost=>$self->{"host"},
+	PeerPort=>$self->{"port"},
+	SSL_verify_mode => 0x02,
+	SSL_ca_file => Mozilla::CA::SSL_ca_file(),
+	) or die "Can't connect: $@";
+    $socket->verify_hostname($host, "http")
+	|| die "hostname verification failure";
     my $raw_request = $request_line . $request_head . "\r\n";
     $self->{"raw_request"} = $raw_request;
     print $socket $raw_request;
@@ -136,11 +137,14 @@ sub post{
 	$request_head .= sprintf "%s: %s\r\n", $header_key, $header_value;
     }
     
-    my $socket = IO::Socket::INET->new(
+    my $socket = IO::Socket::SSL->new(
 	PeerHost=>$host,
 	PeerPort=>$port,
-	Proto=>"tcp"
-	) or die "Error in socket creation: $!\n";
+	SSL_verify_mode => 0x02,
+	SSL_ca_file => Mozilla::CA::SSL_ca_file(),
+	) or die "Can't connect: $@";
+    $socket->verify_hostname($host, "http")
+	|| die "hostname verification failure";
     my $raw_request = $request_line . $request_head . "\r\n" . $request_body;
     $self->{"raw_request"} = $raw_request;
     print $socket $raw_request;
@@ -231,4 +235,4 @@ sub trim{
     $str =~ s/(\s*)$//;
     return $str;
 }
-return "Volken::Http";
+return "Volken::Https";
