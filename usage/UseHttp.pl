@@ -15,11 +15,11 @@ test_Https;
 sub test_Https{
     my $https = Volken::Https->new;
     $https->host("github.com")
-	->url("/");
+	->url("/heetakchoi");
     # print $http->get;
     # print $http->post;
-    $https->get;
-    print $https->info;
+    print $https->get;
+    # print $https->info;
 }
 sub test_Http{
     my $http = Volken::Http->new;
