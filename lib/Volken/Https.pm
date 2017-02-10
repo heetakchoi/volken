@@ -7,8 +7,8 @@ use IO::Socket::SSL;
 use Mozilla::CA;
 use URI::Encode qw(uri_encode uri_decode);
 
-use unchunk;
-use trim;
+sub unchunk;
+sub trim;
 
 sub new{
     my ($class) = @_;
