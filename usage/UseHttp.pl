@@ -13,13 +13,16 @@ sub test_Https;
 test_Https;
 
 sub test_Https{
+# https://play.google.com/store/apps/details?id=com.campmobile.launcher
     my $https = Volken::Https->new;
-    $https->host("github.com")
-	->url("/heetakchoi");
+    $https->host("play.google.com")
+	->url("/store/apps/details")
+	->param("id", "com.campmobile.launcher");
     # print $http->get;
     # print $http->post;
-    print $https->get;
+    print $https->post;
     # print $https->info;
+
 }
 sub test_Http{
     my $http = Volken::Http->new;
@@ -30,6 +33,6 @@ sub test_Http{
 	->param("bb", "bvalue");
     # print $http->get;
     # print $http->post;
-    $http->get;
-    print $http->info;
+    print $http->post;
+    # print $http->info;
 }

@@ -95,7 +95,7 @@ sub post{
     my ($self) = @_;
     my $host = $self->{"host"};
     my $port = $self->{"port"};
-    $port = 80 unless(defined($port));
+    $port = 443 unless(defined($port));
     
     my $req_uri = $self->{"url"};
     my $request_line = sprintf "POST %s HTTP/1.1\r\n", $req_uri;
@@ -141,7 +141,7 @@ sub post{
     }
     
     my $socket = IO::Socket::SSL->new(
-	PeerHost=>$host,
+	PeerHost=> $host,
 	PeerPort=>$port,
 	SSL_verify_mode => 0x02,
 	SSL_ca_file => Mozilla::CA::SSL_ca_file(),
