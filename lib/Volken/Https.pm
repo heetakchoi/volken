@@ -5,7 +5,10 @@ use warnings;
 
 use IO::Socket::SSL;
 use Mozilla::CA;
-use URI::Escape;
+use URI::Encode qw(uri_encode uri_decode);
+
+use unchunk;
+use trim;
 
 sub new{
     my ($class) = @_;
@@ -224,10 +227,6 @@ sub payload{
 sub info{
     my ($self) = @_;
     return sprintf "===== REQ =====\n%s\n===== RES =====\n%s\n", $self->{"raw_request"}, $self->{"raw_response"};
-}
-sub uri_encode{
-    my ($data) = @_;
-    return $data;
 }
 sub trim{
     my ($str) = @_;
