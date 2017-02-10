@@ -56,8 +56,8 @@ sub get{
     }
     
     my $socket = IO::Socket::SSL->new(
-	PeerHost=>$self->{"host"},
-	PeerPort=>$self->{"port"},
+	PeerHost=>$host,
+	PeerPort=>$port,
 	SSL_verify_mode => 0x02,
 	SSL_ca_file => Mozilla::CA::SSL_ca_file(),
 	) or die "Can't connect: $@";
