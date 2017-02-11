@@ -4,7 +4,6 @@ use strict;
 use warnings;
 
 use IO::Socket::INET;
-use URI::Encode qw(uri_encode uri_decode);
 
 sub unchunk;
 sub trim;
@@ -224,7 +223,8 @@ sub info{
 }
 sub uriencode{
     my ($data) = @_;
-    return uri_encode($data);
+    $data =~ s!([^/?#=a-zA-Z0-9_.-])!uc sprintf "%%%02x", ord($1)!eg;
+    return $data;
 }
 sub trim{
     my ($str) = @_;
