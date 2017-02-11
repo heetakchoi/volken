@@ -10,7 +10,7 @@ use Volken::Https;
 sub test_Http;
 sub test_Https;
 
-test_Http;
+test_Https;
 
 sub test_Https{
 # https://play.google.com/store/apps/details?id=com.campmobile.launcher

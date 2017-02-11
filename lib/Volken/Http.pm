@@ -4,10 +4,11 @@ use strict;
 use warnings;
 
 use IO::Socket::INET;
+use URI::Encode qw(uri_encode uri_decode);
 
 sub unchunk;
 sub trim;
-sub uri_encode;
+sub uriencode;
 
 sub new{
     my ($class) = @_;
@@ -33,7 +34,7 @@ sub get{
 	}else{
 	    $req_uri .= "&";
 	}
-	$req_uri .= sprintf "%s=%s", uri_encode($param_key), uri_encode($param_value);
+	$req_uri .= sprintf "%s=%s", uriencode($param_key), uriencode($param_value);
     }
     my $request_line = sprintf "GET %s HTTP/1.1\r\n", $req_uri;
     
@@ -121,7 +122,7 @@ sub post{
 	}else{
 	    $request_body .= "&";
 	}
-	$request_body .= sprintf "%s=%s", uri_encode($param_key), uri_encode($param_value);
+	$request_body .= sprintf "%s=%s", uriencode($param_key), uriencode($param_value);
     }
     my $payload = $self->{"payload"};
     if(defined($payload)){
@@ -221,9 +222,9 @@ sub info{
     my ($self) = @_;
     return sprintf "===== REQ =====\n%s\n===== RES =====\n%s\n", $self->{"raw_request"}, $self->{"raw_response"};
 }
-sub uri_encode{
+sub uriencode{
     my ($data) = @_;
-    return $data;
+    return uri_encode($data);
 }
 sub trim{
     my ($str) = @_;
