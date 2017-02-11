@@ -35,5 +35,5 @@ my $init_node = $json->parse;
 my $next_url = $init_node->get("pagination")->get("next_url");
 my @data = $init_node->get("data")->array_gets();
 foreach (@data){
-    printf "%s\n", $_->get("images")->get("standard_resolution")->get("url")->get;
+    printf "%s\n", $_->get("images")->get("standard_resolution")->get("url")->value;
 }
