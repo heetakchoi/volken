@@ -9,9 +9,9 @@ perl로 만들어진 utility library.<br />
 <div>
 <h3>기능</h3>
 <ul>
-	<li>HTTP client - GET/POST</li>
-	<li>HTTPS client - GET/POST (SSL 모듈 설치 필요)</li>
-	<li>JSON 파서</li>
+<li>HTTP client - GET/POST</li>
+<li>HTTPS client - GET/POST (SSL 모듈 설치 필요)</li>
+<li>JSON 파서</li>
 </ul>
 </div>
 
