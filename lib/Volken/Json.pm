@@ -73,6 +73,7 @@ sub proc_brace{
 	$$index_ref ++; # 콜론 자리
 	$$index_ref ++; # value 시작
 	my $value_node = proc($self, $tokens_ref, $index_ref, $indent +1);
+	$value_node->indent($indent +1);
 	$node->object_set($name, $value_node);
 	
 	# 그 다음 토큰을 체크한다. "," 이면 한 번 더 돌고 "}" 이면 종료시킨다.
@@ -92,6 +93,7 @@ sub proc_brace{
 	$content .= $tokens_ref->[$_];
     }
     $node->content($content);
+    $node->indent($indent);
     return $node;
 }
 sub proc_bracket{
@@ -113,6 +115,7 @@ sub proc_bracket{
 	$$index_ref ++;
 	# value node 를 생성한다.
 	my $value_node = proc($self, $tokens_ref, $index_ref, $indent +1);
+	$value_node->indent($indent +1);
 	$node->array_add($value_node);
 
 	# 그 다음 토큰을 체크한다. "," 이면 한 번 더 돌고 "]" 이면 종료한다.
@@ -133,6 +136,7 @@ sub proc_bracket{
 	$content .= $tokens_ref->[$_] if(defined($tokens_ref->[$_]));
     }
     $node->content($content);
+    $node->indent($indent);
     return $node;
 }
 sub proc_normal{
@@ -146,6 +150,7 @@ sub proc_normal{
     $node->normal_set($candidate);
     $node->content($candidate);
     $$index_ref ++;
+    $node->indent($indent);
     return $node;
 }
 
