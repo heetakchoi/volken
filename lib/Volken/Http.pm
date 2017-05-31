@@ -175,7 +175,7 @@ sub unchunk{
     my $num_start_index = 0;
 
     while(1){
-	my $num_end_index = index($chunked, "\r\n", $num_start_index +2);
+	my $num_end_index = index($chunked, "\r\n", $num_start_index +1);
 	my $num_str = substr($chunked, $num_start_index, $num_end_index - $num_start_index);
 	my $chunk_size_expected = hex(trim($num_str));
 	if($chunk_size_expected == 0){
