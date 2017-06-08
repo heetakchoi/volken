@@ -17,11 +17,11 @@ my $data = "";
 my $flag = 1;
 foreach my $line (@lines){
     if($flag){
-	if(length($line) < 1){
-	    $flag = 0;
-	}
+		if(length($line) < 1){
+			$flag = 0;
+		}
     }else{
-	$data .= sprintf "%s\n", $line;
+		$data .= sprintf "%s\n", $line;
     }
 }
 my $json_txt = $data;
