@@ -53,39 +53,45 @@ sub get{
 	my $header_value = $header_map{$header_key};
 	$request_head .= sprintf "%s: %s\r\n", $header_key, $header_value;
     }
-    
-    my $socket = IO::Socket::INET->new(
-	PeerHost=>$host,
-	PeerPort=>$port,
-	Proto=>"tcp"
-	) or die "Error in socket creation: $!\n";
     my $raw_request = $request_line . $request_head . "\r\n";
     $self->{"raw_request"} = $raw_request;
-    print $socket $raw_request;
 
-    my $raw_response = "";
-    while(<$socket>){
-	$raw_response .= $_;
-    }
-    $self->{"raw_response"} = $raw_response;
-    shutdown($socket, 2);
+    my $emulate_flag = $self->{"emulate_flag"};
+    if($emulate_flag){
+	return "";
+    }else{
+	my $socket = IO::Socket::INET->new(
+	    PeerHost=>$host,
+	    PeerPort=>$port,
+	    Proto=>"tcp"
+	    ) or die "Error in socket creation: $!\n";
 
-    my $neck_index = index($raw_response, "\r\n\r\n");
-    my $response_head = substr($raw_response, 0, $neck_index);
-    my $response_body = substr($raw_response, $neck_index + 4);
-    my @response_headers = split(/\r\n/, $response_head);
-    my $chunked_flag = 0;
-    foreach my $response_header (@response_headers){
-	if($response_header =~ m/Transfer-Encoding/
-	   && $response_header =~ m/chunked/){
-	    $chunked_flag = 1;
-	    last;
+	print $socket $raw_request;
+
+	my $raw_response = "";
+	while(<$socket>){
+	    $raw_response .= $_;
 	}
+	$self->{"raw_response"} = $raw_response;
+	shutdown($socket, 2);
+
+	my $neck_index = index($raw_response, "\r\n\r\n");
+	my $response_head = substr($raw_response, 0, $neck_index);
+	my $response_body = substr($raw_response, $neck_index + 4);
+	my @response_headers = split(/\r\n/, $response_head);
+	my $chunked_flag = 0;
+	foreach my $response_header (@response_headers){
+	    if($response_header =~ m/Transfer-Encoding/
+	       && $response_header =~ m/chunked/){
+		$chunked_flag = 1;
+		last;
+	    }
+	}
+	if($chunked_flag){
+	    $response_body = unchunk($response_body);
+	}
+	return $response_body;
     }
-    if($chunked_flag){
-	$response_body = unchunk($response_body);
-    }
-    return $response_body;
 }
 sub post{
     my ($self) = @_;
@@ -135,39 +141,45 @@ sub post{
 	my $header_value = $header_map{$header_key};
 	$request_head .= sprintf "%s: %s\r\n", $header_key, $header_value;
     }
-    
-    my $socket = IO::Socket::INET->new(
-	PeerHost=>$host,
-	PeerPort=>$port,
-	Proto=>"tcp"
-	) or die "Error in socket creation: $!\n";
     my $raw_request = $request_line . $request_head . "\r\n" . $request_body;
     $self->{"raw_request"} = $raw_request;
-    print $socket $raw_request;
 
-    my $raw_response = "";
-    while(<$socket>){
-	$raw_response .= $_;
-    }
-    $self->{"raw_response"} = $raw_response;
-    shutdown($socket, 2);
+    my $emulate_flag = $self->{"emulate_flag"};
+    if($emulate_flag){
+	return "";
+    }else{
+	my $socket = IO::Socket::INET->new(
+	    PeerHost=>$host,
+	    PeerPort=>$port,
+	    Proto=>"tcp"
+	    ) or die "Error in socket creation: $!\n";
 
-    my $neck_index = index($raw_response, "\r\n\r\n");
-    my $response_head = substr($raw_response, 0, $neck_index);
-    my $response_body = substr($raw_response, $neck_index + 4);
-    my @response_headers = split(/\r\n/, $response_head);
-    my $chunked_flag = 0;
-    foreach my $response_header (@response_headers){
-	if($response_header =~ m/Transfer-Encoding/
-	   && $response_header =~ m/chunked/){
-	    $chunked_flag = 1;
-	    last;
+	print $socket $raw_request;
+
+	my $raw_response = "";
+	while(<$socket>){
+	    $raw_response .= $_;
 	}
+	$self->{"raw_response"} = $raw_response;
+	shutdown($socket, 2);
+
+	my $neck_index = index($raw_response, "\r\n\r\n");
+	my $response_head = substr($raw_response, 0, $neck_index);
+	my $response_body = substr($raw_response, $neck_index + 4);
+	my @response_headers = split(/\r\n/, $response_head);
+	my $chunked_flag = 0;
+	foreach my $response_header (@response_headers){
+	    if($response_header =~ m/Transfer-Encoding/
+	       && $response_header =~ m/chunked/){
+		$chunked_flag = 1;
+		last;
+	    }
+	}
+	if($chunked_flag){
+	    $response_body = unchunk($response_body);
+	}
+	return $response_body;
     }
-    if($chunked_flag){
-	$response_body = unchunk($response_body);
-    }
-    return $response_body;
 }
 sub unchunk{
     my ($chunked) = @_;
@@ -220,6 +232,15 @@ sub payload{
 sub info{
     my ($self) = @_;
     return sprintf "===== REQ =====\n%s\n===== RES =====\n%s\n", $self->{"raw_request"}, $self->{"raw_response"};
+}
+sub emulate_flag{
+    my ($self, $emulate_flag) = @_;
+    $self->{"emulate_flag"} = $emulate_flag;
+    return $self;
+}
+sub raw_request{
+    my ($self) = @_;
+    return $self->{"raw_request"};
 }
 sub uriencode{
     my ($data) = @_;
