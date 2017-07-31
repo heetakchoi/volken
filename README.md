@@ -19,8 +19,9 @@
   <h3>Usage</h3>
   <a href="https://github.com/heetakchoi/volken/tree/develop/usage">Usage</a> 디렉토리 참고
   <ul>
-    <li>https://github.com/heetakchoi/volken/blob/develop/usage/http.pl</li>
-    <li>https://github.com/heetakchoi/volken/blob/develop/usage/json.pl</li>
+    <li><a href="https://github.com/heetakchoi/volken/blob/develop/usage/http.pl">HTTP(S) client</a></li>
+    <li><a href="https://github.com/heetakchoi/volken/blob/develop/usage/json.pl">JSON parser</a></li>
+    <li>Echo server</li>
   </ul>
 </div>
 
