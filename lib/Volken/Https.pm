@@ -78,6 +78,7 @@ sub get{
 	}
 	$self->{"raw_response"} = $raw_response;
 	shutdown($socket, 2);
+	$socket->close();
 
 	my $neck_index = index($raw_response, "\r\n\r\n");
 	my $response_head = substr($raw_response, 0, $neck_index);
@@ -169,6 +170,7 @@ sub post{
 	}
 	$self->{"raw_response"} = $raw_response;
 	shutdown($socket, 2);
+	$socket->close();
 
 	my $neck_index = index($raw_response, "\r\n\r\n");
 	my $response_head = substr($raw_response, 0, $neck_index);
