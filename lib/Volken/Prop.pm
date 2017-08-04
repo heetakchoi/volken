@@ -6,7 +6,8 @@ use warnings;
 sub trim;
 
 sub new{
-    my ($class, $loc) = @_;
+    my ($class, $loc, $separator) = @_;
+    $separator = ":" unless(defined($separator));
     my $self = {};
     $self->{"data"} = {};
     open(my $fh, "<", $loc);
@@ -14,7 +15,7 @@ sub new{
 	$line = trim($line);
 	if($line =~ m/^#/ or length($line) < 1){
 	}else{
-	    my @units = split /:/, $line;
+	    my @units = split /$separator/, $line;
 	    if(scalar @units > 1){
 		$self->{"data"}->{trim($units[0])} = trim($units[1]);
 	    }
@@ -23,6 +24,20 @@ sub new{
     close($fh);
     bless($self, $class);
     return $self;
+}
+sub gets{
+    my ($self, @names) = @_;
+    my %hash = ();
+    foreach my $name (@names){
+	my $value = $self->{"data"}->{$name};
+	$value = "" unless(defined($value));
+	$hash{$name} = $value;
+    }
+    my @results = ();
+    foreach (@names){
+	push(@results, $hash{$_});
+    }
+    return @results;
 }
 sub get{
     my ($self, $name) = @_;
