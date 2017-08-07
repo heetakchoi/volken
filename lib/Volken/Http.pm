@@ -123,6 +123,7 @@ sub post{
     my $first_flag = 1;
     foreach my $param_key (keys %param_map){
 	my $param_value = $param_map{$param_key};
+	$param_value = "" unless(defined($param_value));
 	if($first_flag){
 	    $first_flag = 0;
 	}else{
