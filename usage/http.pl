@@ -21,8 +21,8 @@ binmode(STDIN,  ":encoding(cp949)");
 binmode(STDOUT, ":encoding(cp949)");
 
 my $result = "";
-$result = test_Https_emulated_post;
-# $result = test_Https_post;
+# $result = test_Https_emulated_post;
+$result = test_Https_post;
 # $result = test_Https_emulated_get;
 # $result = test_Https_get;
 # $result = test_Http_emulated_post;
