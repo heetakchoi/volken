@@ -3,11 +3,16 @@ use strict;
 use warnings;
 
 sub indent;
+
+my $source_file = shift;
+die "Usage prettyjson.pl [json file]\n" unless(defined($source_file));
+die "Can't find source file\n" unless(-e $source_file);
+
 my $indent_unit = " "x2;
 my $count = 0;
 
 my $result = "";
-open(my $fh, "<", "first.json");
+open(my $fh, "<", $source_file);
 my $flag = 0;
 while(1){
     my $one_char = getc($fh);
