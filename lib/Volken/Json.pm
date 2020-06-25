@@ -25,6 +25,58 @@ sub load_text{
     $self->{"text"} = $text;
     return;
 }
+sub pretty_json{
+	my ($self, $indent) = @_;
+	$indent = " "x2 unless(defined($indent));
+	my $count = 0;
+	my $result = "";
+	my $text = $self->{"text"};
+	open(my $fh, "<", \$text);
+	my $flag = 0;
+	while(1){
+		my $one_char = getc($fh);
+		if($one_char eq "\n"){
+			$flag = 1;
+		}elsif($flag){
+			if($one_char eq "\t" or $one_char eq " " or $one_char eq "\n"){
+				
+			}else{
+				$flag = 0;
+			}
+		}
+		if($flag){
+		}else{
+			if($one_char eq "{" or $one_char eq "["){
+				$result .= "\n";
+				$result .= $indent x $count;
+				$result .= $one_char;
+				$result .= "\n";
+				$count ++;
+				$result .= $indent x $count;
+
+			}elsif($one_char eq "}" or $one_char eq "]"){
+				$result .= "\n";
+				$count --;
+				$result .= $indent x $count;
+				$result .= $one_char;
+
+			}elsif($one_char eq ","){
+				$result .= $one_char;
+				$result .= "\n";
+				$result .= $indent x $count;
+
+			}else{
+				$result .= $one_char;
+			}
+		}
+		if(eof($fh)){
+			last;
+		}
+	}
+	close($fh);
+
+	return $result;
+}
 sub parse{
     my ($self) = @_;
     my @token_list = tokenizer($self);
