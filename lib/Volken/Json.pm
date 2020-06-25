@@ -74,7 +74,7 @@ sub pretty_json{
 		}
 	}
 	close($fh);
-
+	$result =~ s/^\s+//;
 	return $result;
 }
 sub parse{
