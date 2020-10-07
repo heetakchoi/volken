@@ -12,14 +12,14 @@ sub new{
     $self->{"data"} = {};
     open(my $fh, "<", $loc);
     while(my $line=<$fh>){
-	$line = trim($line);
-	if($line =~ m/^#/ or length($line) < 1){
-	}else{
-	    my @units = split /$separator/, $line;
-	    if(scalar @units > 1){
-		$self->{"data"}->{trim($units[0])} = trim($units[1]);
-	    }
-	}
+		$line = trim($line);
+		if($line =~ m/^#/ or length($line) < 1){
+		}else{
+			my @units = split /$separator/, $line;
+			if(scalar @units > 1){
+				$self->{"data"}->{trim($units[0])} = trim($units[1]);
+			}
+		}
     }
     close($fh);
     bless($self, $class);
@@ -29,13 +29,13 @@ sub gets{
     my ($self, @names) = @_;
     my %hash = ();
     foreach my $name (@names){
-	my $value = $self->{"data"}->{$name};
-	$value = "" unless(defined($value));
-	$hash{$name} = $value;
+		my $value = $self->{"data"}->{$name};
+		$value = "" unless(defined($value));
+		$hash{$name} = $value;
     }
     my @results = ();
     foreach (@names){
-	push(@results, $hash{$_});
+		push(@results, $hash{$_});
     }
     return @results;
 }
