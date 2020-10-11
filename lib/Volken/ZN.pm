@@ -67,6 +67,7 @@ sub shrink{
 		}
 		push(@neo_numbers, $numbers[$_]);
 	}
+	push(@neo_numbers, "0") if(scalar @neo_numbers == 0);
 	$self->set("numbers", \@neo_numbers);
 	return @neo_numbers;
 }
@@ -82,7 +83,9 @@ sub plus{
 		$intermediate_value->set("sign", "-");
 	}else{
 		my $absolute_compare = internal_absolute_compare($self, $right);
-		if($absolute_compare>0){
+		if($absolute_compare == 0){
+			$intermediate_value = Volken::ZN->new("0");
+		}elsif($absolute_compare>0){
 			$intermediate_value = internal_minus($self, $right);
 			if($left_sign eq "-"){
 				$intermediate_value->set("sign", "-");
