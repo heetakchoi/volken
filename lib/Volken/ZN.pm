@@ -29,6 +29,11 @@ sub new{
 	bless($self, $class);
 	return $self;
 }
+sub clone{
+	my ($self) = @_;
+	my $rawdata = $self->get("rawdata");
+	return Volken::ZN->new($rawdata);
+}
 sub get{
 	my ($self, $key) = @_;
 	return $self->{$key};
@@ -36,7 +41,7 @@ sub get{
 sub set{
 	my ($self, $key, $value) = @_;
 	$self->{$key} = $value;
-	return $self->{$key};
+	return $self;
 }
 sub rawdata{
 	my ($self) = @_;
@@ -51,25 +56,20 @@ sub value{
 	}
 	return sprintf "%s%s", $self->get("sign"), $number_string;
 }
-sub shrink{
-	my ($self) = @_;
-	my @numbers = @{$self->get("numbers")};
-	my @neo_numbers = ();
-	my $latch = 0;
-	my $numbers_size = scalar @numbers;
-	foreach ( (0..($numbers_size-1)) ){
-		unless($latch){
-			if($numbers[$_] eq "0"){
-				next;
-			}else{
-				$latch = 1;
-			}
-		}
-		push(@neo_numbers, $numbers[$_]);
+
+sub compare{
+	my ($self, $right) = @_;
+	my $left_sign = $self->get("sign");
+	my $right_sign = $right->get("sign");
+	if($left_sign ne "-" and $right_sign ne "-"){
+		return internal_absolute_compare($self, $right);
+	}elsif($left_sign eq "-" and $right_sign eq "-"){
+		return internal_absolute_compare($right, $self);
+	}elsif($left_sign eq "-"){
+		return -1;
+	}else{
+		return 1;
 	}
-	push(@neo_numbers, "0") if(scalar @neo_numbers == 0);
-	$self->set("numbers", \@neo_numbers);
-	return @neo_numbers;
 }
 sub plus{
 	my ($self, $right) = @_;
@@ -97,17 +97,17 @@ sub plus{
 			}
 		}
 	}
-	$intermediate_value->shrink;
-	return $intermediate_value;
+	return $intermediate_value->shrink;
 }
 sub minus{
 	my ($self, $right) = @_;
-	if($right->get("sign") eq "-"){
-		$right->set("sign", "");
+	my $clone = $right->clone;
+	if($clone->get("sign") eq "-"){
+		$clone->set("sign", "");
 	}else{
-		$right->set("sign", "-");
+		$clone->set("sign", "-");
 	}
-	return plus($self, $right);
+	return plus($self, $clone);
 }
 sub multiply{
 	my ($self, $right) = @_;
@@ -117,13 +117,45 @@ sub multiply{
 	}
 	return $result;
 }
-sub divide{
-	my ($self, $right) = @_;
-	my $result = internal_divide($self, $right);
-	if($self->get("sign") ne $right->get("sign")){
-		$result->set("sign", "-");
+sub half{
+	my ($self) = @_;
+	my @numbers = @{$self->get("numbers")};
+	my $size = scalar @numbers;
+	my $half_rawdata = "";
+	my $remain = "";
+	foreach ( (0..($size-1)) ){
+		my $current = int ($remain . $numbers[$_]);
+		$half_rawdata .= int ($current / 2);
+		if($current %2 != 0){
+			$remain = "1";
+		}else{
+			$remain = "";
+		}
 	}
-	return $result;
+	return Volken::ZN->new($half_rawdata)->shrink;
+}
+sub shrink{
+	my ($self) = @_;
+	my @numbers = @{$self->get("numbers")};
+	my @neo_numbers = ();
+	my $latch = 0;
+	my $numbers_size = scalar @numbers;
+	my $neo_rawdata = "";
+	foreach ( (0..($numbers_size-1)) ){
+		unless($latch){
+			if($numbers[$_] eq "0"){
+				next;
+			}else{
+				$latch = 1;
+			}
+		}
+		push(@neo_numbers, $numbers[$_]);
+		$neo_rawdata .= $numbers[$_];
+	}
+	push(@neo_numbers, "0") if(scalar @neo_numbers == 0);
+	$self->set("numbers", \@neo_numbers);
+	$self->set("rawdata", $neo_rawdata);
+	return $self;
 }
 ##### INTERNAL FUNCTIONS START #####
 sub internal_absolute_compare{
@@ -213,14 +245,22 @@ sub internal_minus{
 	}
 	my @final_numbers = reverse @reversed_final_numbers;
 	my $final_rawdata = "";
-	foreach (@final_numbers){
-		$final_rawdata .= $_;
+	my $latch = 0;
+	my $final_number_size = scalar @final_numbers;
+	foreach ( (0..($final_number_size-1)) ){
+		unless($latch){
+			if($final_numbers[$_] eq "0"){
+				next;
+			}else{
+				$latch = 1;
+			}
+		}
+		$final_rawdata .= $final_numbers[$_];
 	}
 	return Volken::ZN->new($final_rawdata);
 }
 sub internal_multiply{
 	my ($left, $right) = @_;
-
 	my @left_numbers = @{$left->get("numbers")};
 	my @reversed_left_numbers = reverse @left_numbers;
 	my $left_size = scalar @left_numbers;
@@ -240,10 +280,7 @@ sub internal_multiply{
 	}
 	return $rn_result;
 }
-sub internal_divide{
-	my ($left, $right) = @_;
-	
-}
+
 ##### INTERNAL FUNCTIONS END #####
 
 return "ZN.pm";
