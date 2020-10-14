@@ -18,7 +18,7 @@ printf "%s / %s = %s\n", $left, $right, ($left_qn->divide($right_qn))->get("rawd
 
 my ($one) = ("6/9");
 my $one_qn = Volken::QN->new($one);
-printf "%s is equals %s\n", $one, $one_qn->reduce->get("rawdata");
+printf "%s is equivalent to %s\n", $one, $one_qn->reduce->get("rawdata");
 
 
 
