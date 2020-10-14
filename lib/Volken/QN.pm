@@ -41,6 +41,53 @@ sub plus{
 	my $rawdata = sprintf "%s/%s", $num_zn->value, ($lcm_den->get("zn"))->value;
 	return Volken::QN->new($rawdata);
 }
+sub minus{
+	my ($self, $right) = @_;
+	my $left_num = ${$self->get("num")};
+	my $left_den = ${$self->get("den")};
+
+	my $right_num = ${$right->get("num")};
+	my $right_den = ${$right->get("den")};
+
+	my $lcm_den = $left_den->lcm($right_den);
+	my $beta_den = $lcm_den->divide($left_den);
+	my $alpha_den = $lcm_den->divide($right_den);
+
+	my $left_part = $left_num->multiply($beta_den);
+	my $right_part = $right_num->multiply($alpha_den);
+
+	my $num_zn = ($left_part->get("zn"))->minus($right_part->get("zn"));
+	my $rawdata = sprintf "%s/%s", $num_zn->value, ($lcm_den->get("zn"))->value;
+	return Volken::QN->new($rawdata);
+}
+sub multiply{
+	my ($self, $right) = @_;
+	my $left_num = ${$self->get("num")};
+	my $left_den = ${$self->get("den")};
+
+	my $right_num = ${$right->get("num")};
+	my $right_den = ${$right->get("den")};
+
+	my $num = $left_num->multiply($right_num);
+	my $den = $left_den->multiply($right_den);
+
+	my $rawdata = sprintf "%s/%s", $num->get("zn")->value, $den->get("zn")->value;
+	return Volken::QN->new($rawdata);
+}
+sub divide{
+	my ($self, $right) = @_;
+	my $left_num = ${$self->get("num")};
+	my $left_den = ${$self->get("den")};
+
+	my $right_num = ${$right->get("den")};
+	my $right_den = ${$right->get("num")};
+
+	my $num = $left_num->multiply($right_num);
+	my $den = $left_den->multiply($right_den);
+
+	my $rawdata = sprintf "%s/%s", $num->get("zn")->value, $den->get("zn")->value;
+	return Volken::QN->new($rawdata);
+}
 sub reduce{
 	my ($self) = @_;
 	my $num = ${$self->{"num"}};
@@ -64,7 +111,7 @@ sub reduce{
 			$expr_den = $expr_den->multiply(Volken::ZN->new($key));
 		}
 	}
-	my $rawdata = sprintf "%s/%s", $expr_num, $expr_den;
+	my $rawdata = sprintf "%s/%s", $expr_num->value, $expr_den->value;
 	return Volken::QN->new($rawdata);
 }
 sub get{
