@@ -117,6 +117,21 @@ sub multiply{
 	}
 	return $result;
 }
+sub divide{
+	my ($self, $right) = @_;
+	my $left_clone = $self->clone->set("sign", "");
+	my $right_clone = $right->clone->set("sign", "");
+	my ($quotient, $remainder) = internal_divide($left_clone, $right_clone);
+	if($self->get("sign") ne "-" and $right->get("sign") ne "-"){
+		return ($quotient, $remainder);
+	}elsif($self->get("sign") eq "-" and $right->get("sign") eq "-"){
+		return (($quotient->plus(Volken::ZN->new("1"))), $right_clone->minus($remainder));
+	}elsif($self->get("sign") ne "-" and $right->get("sign") eq "-"){
+		return ($quotient->multiply(Volken::ZN->new("-1")), $remainder);
+	}else{
+		return (($quotient->plus(Volken::ZN->new("1"))->multiply(Volken::ZN->new("-1"))), $right_clone->minus($remainder));
+	}
+}
 sub half{
 	my ($self) = @_;
 	my @numbers = @{$self->get("numbers")};
@@ -280,7 +295,59 @@ sub internal_multiply{
 	}
 	return $rn_result;
 }
+sub internal_divide{
+	my ($left, $right) = @_;
+	my $quotient = Volken::ZN->new("0");
+	my $remainder = Volken::ZN->new("0");
+	my $compare_value = $left->compare($right);
+	if($compare_value < 0){
+		$remainder = $right->clone;
+	}elsif($compare_value == 0){
+		$quotient = Volken::ZN->new("1");
+	}else{
+		my @dividends = @{$left->get("numbers")};
+		my $dividends_size = scalar @dividends;
+		my @divisors = @{$right->get("numbers")};
+		my $divisors_size = scalar @divisors;
+		my $divisor_string = "";
+		map { $divisor_string .= $_ } @divisors;
+		my $divisor = Volken::ZN->new($divisor_string);
+		my @divisor_multiples = ();
+		foreach ( (0..9) ){
+			$divisor_multiples[$_] = $divisor->multiply(Volken::ZN->new($_));
+		}
+		my $dividend_string = "";
+		map { $dividend_string .= $_ } @dividends;
+		
+		my $remains_string = substr($dividend_string, 0, $divisors_size-1);;
+		my $quotient_string = "";
 
+		foreach my $quotient_index ( (0..($dividends_size-$divisors_size)) ){
+			my $current_string = $remains_string . substr($dividend_string, $quotient_index + $divisors_size -1, 1);
+			my $current = Volken::ZN->new($current_string);
+			my $compare = $current->compare($divisor);
+			if($compare == 0){
+				$quotient_string .= "1";
+				$remains_string = "";
+			}elsif($compare > 0){
+				foreach ( (0..9) ){
+					my $multiple = $divisor_multiples[9-$_];
+					if($current->compare($multiple)>0){
+						$quotient_string .= (9-$_);
+						$remains_string = $current->minus($multiple)->value;
+						last;
+					}
+				}
+			}else{
+				$quotient_string .= "0";
+				$remains_string = $current_string;
+			}
+		}
+		$quotient = Volken::ZN->new($quotient_string)->shrink;
+		$remainder = Volken::ZN->new($remains_string)->shrink;
+	}
+	return ($quotient, $remainder);
+}
 ##### INTERNAL FUNCTIONS END #####
 
 return "ZN.pm";
