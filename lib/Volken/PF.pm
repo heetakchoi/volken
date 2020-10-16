@@ -24,6 +24,20 @@ sub new{
 	return $self;
 }
 sub try_to_divide{
+	my ($left, $right) = @_;
+	# return try_to_divide_use_bisection($left, $right);
+	return try_to_divide_use_quotient_and_remainder($left, $right);
+}
+sub try_to_divide_use_quotient_and_remainder{
+	my ($dividend, $divisor) = @_;
+	my ($quotient, $remainder) = $dividend->quotient_and_remainder($divisor);
+	if($remainder->value eq "0"){
+		$quotient;
+	}else{
+		return undef;
+	}
+}
+sub try_to_divide_use_bisection{
 	my ($zn, $dc) = @_;
 	my @zn_numbers = @{$zn->get("numbers")};
 	my @dc_numbers = @{$dc->get("numbers")};

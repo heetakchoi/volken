@@ -121,7 +121,7 @@ sub quotient_and_remainder{
 	my ($self, $right) = @_;
 	my $left_clone = $self->clone->set("sign", "");
 	my $right_clone = $right->clone->set("sign", "");
-	my ($quotient, $remainder) = internal_divide($left_clone, $right_clone);
+	my ($quotient, $remainder) = internal_quotient_and_remainder($left_clone, $right_clone);
 	if($self->get("sign") ne "-" and $right->get("sign") ne "-"){
 		return ($quotient, $remainder);
 	}elsif($self->get("sign") eq "-" and $right->get("sign") eq "-"){
@@ -295,7 +295,7 @@ sub internal_multiply{
 	}
 	return $rn_result;
 }
-sub internal_divide{
+sub internal_quotient_and_remainder{
 	my ($left, $right) = @_;
 	my $quotient = Volken::ZN->new("0");
 	my $remainder = Volken::ZN->new("0");
@@ -332,7 +332,7 @@ sub internal_divide{
 			}elsif($compare > 0){
 				foreach ( (0..9) ){
 					my $multiple = $divisor_multiples[9-$_];
-					if($current->compare($multiple)>0){
+					if($current->compare($multiple)>=0){
 						$quotient_string .= (9-$_);
 						$remains_string = $current->minus($multiple)->value;
 						last;
