@@ -117,7 +117,7 @@ sub multiply{
 	}
 	return $result;
 }
-sub divide{
+sub quotient_and_remainder{
 	my ($self, $right) = @_;
 	my $left_clone = $self->clone->set("sign", "");
 	my $right_clone = $right->clone->set("sign", "");
