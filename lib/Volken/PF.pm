@@ -16,7 +16,6 @@ sub new{
 	}else{
 		$zn = Volken::ZN->new($rawdata);
 	}
-	printf "PF zn %s\n", $zn->value;
 	$self->{"zn"} = $zn;
 	$self->{"sign"} = $zn->get("sign");
 	my $clone = $zn->clone;
