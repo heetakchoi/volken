@@ -156,6 +156,7 @@ sub shrink{
 	my $latch = 0;
 	my $numbers_size = scalar @numbers;
 	my $neo_rawdata = "";
+	$neo_rawdata = "-" if($self->get("sign") eq "-");
 	foreach ( (0..($numbers_size-1)) ){
 		unless($latch){
 			if($numbers[$_] eq "0"){
@@ -301,7 +302,7 @@ sub internal_quotient_and_remainder{
 	my $remainder = Volken::ZN->new("0");
 	my $compare_value = $left->compare($right);
 	if($compare_value < 0){
-		$remainder = $right->clone;
+		$remainder = $self->clone;
 	}elsif($compare_value == 0){
 		$quotient = Volken::ZN->new("1");
 	}else{
