@@ -330,7 +330,7 @@ sub internal_quotient_and_remainder{
 
 		foreach my $quotient_index ( (0..($dividends_size-$divisors_size)) ){
 			my $current_string = $remains_string . substr($dividend_string, $quotient_index + $divisors_size -1, 1);
-			my $current = Volken::ZN->new($current_string);
+			my $current = Volken::ZN->new($current_string)->shrink;
 			my $compare = $current->compare($divisor);
 			if($compare == 0){
 				$quotient_string .= "1";

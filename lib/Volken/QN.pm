@@ -13,6 +13,7 @@ sub new{
 	}else{
 		$denominator = $list[1];
 	}
+	printf "rawdata %s num %s den %s\n", $rawdata, $numerator, $denominator;
 	my $num_pf = Volken::PF->new(Volken::ZN->new($numerator));
 	my $den_pf = Volken::PF->new(Volken::ZN->new($denominator));
 	my $self = {};
@@ -70,8 +71,9 @@ sub multiply{
 
 	my $num = $left_num->multiply($right_num);
 	my $den = $left_den->multiply($right_den);
-
+	
 	my $rawdata = sprintf "%s/%s", $num->get("zn")->value, $den->get("zn")->value;
+	printf "rawdata %s\n", $rawdata;
 	return Volken::QN->new($rawdata);
 }
 sub divide{
@@ -93,6 +95,7 @@ sub reduce{
 	my $num = ${$self->{"num"}};
 	my $den = ${$self->{"den"}};
 	my $gcd = $num->gcd($den);
+	# printf "num %s den %s\n", $num->value, $den->value;
 	my $neo_num = $num->divide($gcd);
 	my $neo_den = $den->divide($gcd);
 	my %neo_num_pfhash = %{$neo_num->get("pfhash")};
@@ -125,7 +128,7 @@ sub set{
 }
 sub value{
 	my ($self) = @_;
-	my $value = sprintf "%s/%s", ${$self->{"num"}}->pretty_value, ${$self->{"den"}}->pretty_value;
+	my $value = sprintf "%s/%s", ${$self->{"num"}}->value, ${$self->{"den"}}->value;
 	return $value;
 }
 

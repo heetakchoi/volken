@@ -8,8 +8,8 @@ use Volken::ZN;
 
 my ($left, $right, $result, $quotient, $remainder);
 
-my @lefts = (2..7);
-my @rights = (2..7);
+my @lefts = (102, 100003);
+my @rights = (5, 25);
 
 # my @flags = (1,1,1,1,1);
 my @flags = (0,0,0,1,0);
