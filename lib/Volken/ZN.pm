@@ -122,9 +122,12 @@ sub quotient_and_remainder{
 	my $left_clone = $self->clone->set("sign", "");
 	my $right_clone = $right->clone->set("sign", "");
 	my ($quotient, $remainder) = internal_quotient_and_remainder($left_clone, $right_clone);
+	
 	if($self->get("sign") ne "-" and $right->get("sign") ne "-"){
+		# 둘 다 양수이면 internal q&r 의 값을 반환한다.
 		return ($quotient, $remainder);
 	}elsif($self->get("sign") eq "-" and $right->get("sign") eq "-"){
+		# 둘 다 음수이면 몫을 크게하여 더 작게한 다음 그만큼 나머지를 작게 한다
 		return (($quotient->plus(Volken::ZN->new("1"))), $right_clone->minus($remainder));
 	}elsif($self->get("sign") ne "-" and $right->get("sign") eq "-"){
 		return ($quotient->multiply(Volken::ZN->new("-1")), $remainder);
@@ -302,7 +305,7 @@ sub internal_quotient_and_remainder{
 	my $remainder = Volken::ZN->new("0");
 	my $compare_value = $left->compare($right);
 	if($compare_value < 0){
-		$remainder = $self->clone;
+		$remainder = $left->clone;
 	}elsif($compare_value == 0){
 		$quotient = Volken::ZN->new("1");
 	}else{
