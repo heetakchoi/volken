@@ -123,7 +123,7 @@ sub set{
 	$self->{$key} = $value;
 	return $self;
 }
-sub pretty_value{
+sub value{
 	my ($self) = @_;
 	my $value = sprintf "%s/%s", ${$self->{"num"}}->pretty_value, ${$self->{"den"}}->pretty_value;
 	return $value;

@@ -98,7 +98,7 @@ sub try_to_divide_use_bisection{
 		}
 	}
 }
-sub pretty_value{
+sub value{
 	my ($self) = @_;
 	my %pfhash = %{$self->{"pfhash"}};
 	my $value = "";
