@@ -7,15 +7,9 @@ use lib "../lib";
 use Volken::ZN;
 
 my ($left, $right, $result, $quotient, $remainder);
-# my @lefts = ("123456789");
-# my @rights = ("8765");
-# my @lefts = ("123", "-123");
-# my @rights = ("99", "-99");
-# my @lefts = (-10..10);
-# my @rights = (-5..5);
 
-my @lefts = ("4");
-my @rights = ("2");
+my @lefts = (2..7);
+my @rights = (2..7);
 
 # my @flags = (1,1,1,1,1);
 my @flags = (0,0,0,1,0);
