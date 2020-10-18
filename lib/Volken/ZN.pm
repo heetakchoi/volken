@@ -187,11 +187,13 @@ sub internal_absolute_compare{
 	my $right_size = scalar @right_numbers;
 
 	if($left_size != $right_size){
-		return $left_size - $right_size;
+		my $result = $left_size - $right_size;
+		return ($result >0)?1:-1;
 	}else{
 		foreach ( (0..($left_size-1)) ){
 			if($left_numbers[$_] != $right_numbers[$_]){
-				return $left_numbers[$_] - $right_numbers[$_];
+				my $result = $left_numbers[$_] - $right_numbers[$_];
+				return ($result >0)?1:-1;
 			}
 		}
 		return 0;
