@@ -4,23 +4,30 @@ use strict;
 use warnings;
 
 sub new{
-	my ($class, $rawdata) = @_;
+	my ($class, $zn) = @_;
+	$zn = Volken::ZN->new("1") unless(defined($zn));
 	my $self = {};
-	my $zn;
-	unless(defined($rawdata)){
-		$rawdata = "1";
-	}
-	if(ref($rawdata) eq "Volken::ZN"){
-		$zn = $rawdata;
-		$self->{"rawdata"} = $zn->get("rawdata");
-	}else{
-		$zn = Volken::ZN->new($rawdata);
-	}
 	$self->{"zn"} = $zn;
-	$self->{"sign"} = $zn->get("sign");
-	my $clone = $zn->clone;
-	internal_prime_factorization($self, $clone);
+	my $zn_clone = $zn->clone;
+	internal_prime_factorization($self, $zn_clone);
 	bless($self, $class);
+	return $self;
+}
+sub shrink{
+	my ($self) = @_;
+	my %pfhash = %{$self->get("pfhash")};
+	my $expr = Volken::ZN->new("1");
+	foreach my $key (keys %pfhash){
+		if($pfhash{$key} == 0){
+			delete $pfhash{$key};
+		}else{
+			my $index = $pfhash{$key};
+			foreach ( (0..($index-1)) ){
+				$expr = $expr->multiply(Volken::ZN->new($key));
+			}
+		}
+	}
+	$self->set("zn", $expr);
 	return $self;
 }
 sub try_to_divide{
@@ -118,7 +125,7 @@ sub internal_prime_factorization{
 	my $zn_1 = Volken::ZN->new("1");
 	my $divisor = Volken::ZN->new("0");
 	my $try_again_flag = 0;
-	while(($clone->minus($zn_1))->value ne "0"){
+	while($clone->compare($zn_1) != 0){
 		if($try_again_flag){
 			
 		}else{
@@ -140,29 +147,9 @@ sub internal_prime_factorization{
 	}
 	$self->{"pfhash"} = \%pfhash;
 }
-sub shrink{
-	my ($self) = @_;
-	my %pfhash = %{$self->get("pfhash")};
-	my $expr = Volken::ZN->new("1");
-	foreach my $key (keys %pfhash){
-		if($pfhash{$key} == 0){
-			delete $pfhash{$key};
-		}else{
-			my $index = $pfhash{$key};
-			foreach ( (0..($index-1)) ){
-				$expr = $expr->multiply(Volken::ZN->new($key));
-			}
-		}
-	}
-	$self->set("zn", $expr);
-	return $self;
-}
+
 sub multiply{
 	my ($self, $right) = @_;
-	my $neo_sign = "";
-	if($self->get("sign") ne $right->get("sign")){
-		$neo_sign = "-";
-	}
 	my %left_pfhash = %{$self->get("pfhash")};
 	my %right_pfhash = %{$right->get("pfhash")};
 	my %neo_pfhash = ();
@@ -178,15 +165,11 @@ sub multiply{
 			$neo_pfhash{$key} = $right_pfhash{$key};
 		}
 	}
-	my $multiple = Volken::PF->new->set("sign", $neo_sign)->set("pfhash", \%neo_pfhash);
+	my $multiple = Volken::PF->new->set("pfhash", \%neo_pfhash);
 	return $multiple->shrink;
 }
 sub divide{
 	my ($self, $right) = @_;
-	my $neo_sign = "";
-	if($self->get("sign") ne $right->get("sign")){
-		$neo_sign = "-";
-	}
 	my %left_pfhash = %{$self->get("pfhash")};
 	my %right_pfhash = %{$right->get("pfhash")};
 	my %neo_pfhash = ();
@@ -202,37 +185,27 @@ sub divide{
 			$neo_pfhash{$key} = - $right_pfhash{$key};
 		}
 	}
-	my $division = Volken::PF->new->set("sign", $neo_sign)->set("pfhash", \%neo_pfhash);
+	my $division = Volken::PF->new->set("pfhash", \%neo_pfhash);
 	return $division->shrink;
 }
 sub gcd{
 	my ($self, $right) = @_;
-	my $neo_sign = "";
-	if($self->get("sign") ne $right->get("sign")){
-		$neo_sign = "-";
-	}
 	my %left_pfhash = %{$self->get("pfhash")};
 	my %right_pfhash = %{$right->get("pfhash")};
 	my %neo_pfhash = ();
-
 	foreach my $key (keys %left_pfhash){
 		if(defined($right_pfhash{$key})){
 			$neo_pfhash{$key} = ($left_pfhash{$key} - $right_pfhash{$key}>0)?($right_pfhash{$key}):($left_pfhash{$key});
 		}
 	}
-	my $greatest_common_divisor = Volken::PF->new->set("sign", $neo_sign)->set("pfhash", \%neo_pfhash);
+	my $greatest_common_divisor = Volken::PF->new->set("pfhash", \%neo_pfhash);
 	return $greatest_common_divisor->shrink;
 }
 sub lcm{
 	my ($self, $right) = @_;
-	my $neo_sign = "";
-	if($self->get("sign") ne $right->get("sign")){
-		$neo_sign = "-";
-	}
 	my %left_pfhash = %{$self->get("pfhash")};
 	my %right_pfhash = %{$right->get("pfhash")};
 	my %neo_pfhash = ();
-
 	foreach my $key (keys %left_pfhash){
 		if(defined($right_pfhash{$key})){
 			$neo_pfhash{$key} = ($left_pfhash{$key} - $right_pfhash{$key}>0)?($left_pfhash{$key}):($right_pfhash{$key});
@@ -245,7 +218,7 @@ sub lcm{
 			$neo_pfhash{$key} = $right_pfhash{$key};
 		}
 	}
-	my $least_common_multiple = Volken::PF->new->set("sign", $neo_sign)->set("pfhash", \%neo_pfhash);
+	my $least_common_multiple = Volken::PF->new->set("pfhash", \%neo_pfhash);
 	return $least_common_multiple->shrink;
 }
 sub next_prime_candidate{

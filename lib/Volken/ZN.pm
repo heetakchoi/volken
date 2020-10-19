@@ -34,6 +34,30 @@ sub clone{
 	my $rawdata = $self->get("rawdata");
 	return Volken::ZN->new($rawdata);
 }
+sub shrink{
+	my ($self) = @_;
+	my @numbers = @{$self->get("numbers")};
+	my @neo_numbers = ();
+	my $latch = 0;
+	my $numbers_size = scalar @numbers;
+	my $neo_rawdata = "";
+	$neo_rawdata = "-" if($self->get("sign") eq "-");
+	foreach ( (0..($numbers_size-1)) ){
+		unless($latch){
+			if($numbers[$_] eq "0"){
+				next;
+			}else{
+				$latch = 1;
+			}
+		}
+		push(@neo_numbers, $numbers[$_]);
+		$neo_rawdata .= $numbers[$_];
+	}
+	push(@neo_numbers, "0") if(scalar @neo_numbers == 0);
+	$self->set("numbers", \@neo_numbers);
+	$self->set("rawdata", $neo_rawdata);
+	return $self;
+}
 sub get{
 	my ($self, $key) = @_;
 	return $self->{$key};
@@ -152,30 +176,7 @@ sub half{
 	}
 	return Volken::ZN->new($half_rawdata)->shrink;
 }
-sub shrink{
-	my ($self) = @_;
-	my @numbers = @{$self->get("numbers")};
-	my @neo_numbers = ();
-	my $latch = 0;
-	my $numbers_size = scalar @numbers;
-	my $neo_rawdata = "";
-	$neo_rawdata = "-" if($self->get("sign") eq "-");
-	foreach ( (0..($numbers_size-1)) ){
-		unless($latch){
-			if($numbers[$_] eq "0"){
-				next;
-			}else{
-				$latch = 1;
-			}
-		}
-		push(@neo_numbers, $numbers[$_]);
-		$neo_rawdata .= $numbers[$_];
-	}
-	push(@neo_numbers, "0") if(scalar @neo_numbers == 0);
-	$self->set("numbers", \@neo_numbers);
-	$self->set("rawdata", $neo_rawdata);
-	return $self;
-}
+
 ##### INTERNAL FUNCTIONS START #####
 sub internal_absolute_compare{
 	my ($left, $right) = @_;
