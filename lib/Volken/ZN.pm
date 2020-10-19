@@ -163,7 +163,7 @@ sub half{
 	my ($self) = @_;
 	my @numbers = @{$self->get("numbers")};
 	my $size = scalar @numbers;
-	my $half_rawdata = "";
+	my $half_rawdata = $self->get("sign");
 	my $remain = "";
 	foreach ( (0..($size-1)) ){
 		my $current = int ($remain . $numbers[$_]);
