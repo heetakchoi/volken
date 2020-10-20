@@ -60,6 +60,11 @@ sub shrink{
 	my $rawdata = sprintf "%s%s/%s", $sign, $expr_num->value, $expr_den->value;
 	return Volken::QN->new($rawdata);
 }
+sub value{
+	my ($self) = @_;
+	return $self->shrink->get("rawdata");
+}
+
 sub plus{
 	my ($self, $right) = @_;
 	my $left_sign = $self->get("sign");
@@ -163,11 +168,6 @@ sub set{
 	my ($self, $key, $value) = @_;
 	$self->{$key} = $value;
 	return $self;
-}
-sub value{
-	my ($self) = @_;
-	my $value = sprintf "%s/%s", ${$self->{"num"}}->value, ${$self->{"den"}}->value;
-	return $value;
 }
 
 return "QN.pm";

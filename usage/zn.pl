@@ -11,8 +11,8 @@ my ($left, $right, $result, $quotient, $remainder);
 my @lefts = (102, 100003);
 my @rights = (5, 25);
 
-# my @flags = (1,1,1,1,1);
-my @flags = (0,0,0,1,0);
+my @flags = (1,1,1,1,1);
+# my @flags = (0,0,0,1,0);
 
 if($flags[0]){
 	print "#"x80;
