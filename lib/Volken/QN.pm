@@ -18,13 +18,21 @@ sub new{
 	}else{
 		$denominator = $list[1];
 	}
-	my $num_pf = Volken::PF->new(Volken::ZN->new($numerator));
-	my $den_pf = Volken::PF->new(Volken::ZN->new($denominator));
+	my $num_pf = undef;
+	my $den_pf = undef;
+	my $is_zero = 0;
+	if("0" eq $numerator){
+		$is_zero = 1;
+	}else{
+		$num_pf = Volken::PF->new(Volken::ZN->new($numerator));
+		$den_pf = Volken::PF->new(Volken::ZN->new($denominator));		
+	}
 	my $self = {};
 	$self->{"rawdata"} = $rawdata;
 	$self->{"num"} = \$num_pf;
 	$self->{"den"} = \$den_pf;
 	$self->{"sign"} = $sign;
+	$self->{"is_zero"} = $is_zero;
 	bless($self, $class);
 	return $self;
 }
@@ -34,6 +42,10 @@ sub clone{
 }
 sub shrink{
 	my ($self) = @_;
+	
+	my $is_zero = $self->get("is_zero");
+	return Volken::QN->new("0")->set("is_zero", 1) if($is_zero);
+	
 	my $sign = $self->get("sign");
 	my $num = ${$self->{"num"}};
 	my $den = ${$self->{"den"}};
@@ -67,6 +79,16 @@ sub value{
 
 sub plus{
 	my ($self, $right) = @_;
+	my $left_is_zero = $self->get("is_zero");
+	my $right_is_zero = $right->get("is_zero");
+	if($left_is_zero and $right_is_zero){
+		return Volken::QN->new("0")->set("is_zero", 1);
+	}elsif($left_is_zero){
+		return $right;
+	}elsif($right_is_zero){
+		return $self;
+	}
+	
 	my $left_sign = $self->get("sign");
 	my $left_num = ${$self->get("num")};
 	my $left_den = ${$self->get("den")};
@@ -125,6 +147,13 @@ sub minus{
 }
 sub multiply{
 	my ($self, $right) = @_;
+
+	my $left_is_zero = $self->get("is_zero");
+	my $right_is_zero = $right->get("is_zero");
+	if($left_is_zero or $right_is_zero){
+		return Volken::QN->new("0")->set("is_zero", 1);
+	}
+	
 	my $left_sign = $self->get("sign");
 	my $left_num = ${$self->get("num")};
 	my $left_den = ${$self->get("den")};
@@ -143,6 +172,15 @@ sub multiply{
 }
 sub divide{
 	my ($self, $right) = @_;
+
+	my $left_is_zero = $self->get("is_zero");
+	my $right_is_zero = $right->get("is_zero");
+	if($left_is_zero){
+		return Volken::QN->new("0")->set("is_zero", 1);
+	}elsif($right_is_zero){
+		return undef;
+	}
+	
 	my $left_sign = $self->get("sign");
 	my $left_num = ${$self->get("num")};
 	my $left_den = ${$self->get("den")};
