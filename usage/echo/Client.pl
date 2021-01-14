@@ -30,4 +30,5 @@ my $response = "";
 $socket->recv($response, 1024);
 printf "received: %s\n", $response;
 
+shutdown($socket, 2);
 $socket->close();

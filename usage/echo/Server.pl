@@ -33,15 +33,15 @@ my $thread_size :shared = 0;
 
 while(1){
     if($thread_size < $thread_limit){
-	{
-	    lock($thread_size);
-	    $thread_size ++;
-	}
-	my $client_socket = $server_socket->accept();
-	my $client_thread = threads->create(\&echo, $client_socket, $delay);
+		{
+			lock($thread_size);
+			$thread_size ++;
+		}
+		my $client_socket = $server_socket->accept();
+		my $client_thread = threads->create(\&echo, $client_socket, $delay);
     }else{
-	printf "[INFO] Thread size %d reaches Thread limit %d\n", $thread_size, $thread_limit;
-	sleep(1);
+		printf "[INFO] Thread size %d reaches Thread limit %d\n", $thread_size, $thread_limit;
+		sleep(1);
     }
 }
 
@@ -49,22 +49,22 @@ sub echo{
     my ($client_socket, $delay) = @_;
     my $data;
     while(1){
-	$client_socket->recv($data, 1024);
-	last if(length($data)<1);
-	print "[INFO] Processing ...\n";
-	if($delay > 0){
-	    sleep($delay);
-	}
-	printf "[INFO] Recv: %s\n", $data;
-	$client_socket->send($data);
+		$client_socket->recv($data, 1024);
+		last if(length($data)<1);
+		print "[INFO] Processing ...\n";
+		if($delay > 0){
+			sleep($delay);
+		}
+		printf "[INFO] Recv: %s\n", $data;
+		$client_socket->send($data);
     }
     shutdown($client_socket, 2);
     $client_socket->close();
     
     threads->detach();
     {
-	lock($thread_size);
-	$thread_size --;
+		lock($thread_size);
+		$thread_size --;
     }
 }
 
