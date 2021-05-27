@@ -14,10 +14,26 @@ sub new{
     return $self;
 }
 
-sub unite{
-    my ($self, $left, $right, $flag_simulation) = @_;
+sub check{
+	my ($self, $left, $right) = @_;
+	$self->internal_sync($left, $right, "SIMULATION", "VERBOSE");
+	return $self;
+}
+sub sync{
+	my ($self, $left, $right) = @_;
+	$self->internal_sync($left, $right, 0, 1);
+}
+sub sync_silent{
+	my ($self, $left, $right) = @_;
+	$self->internal_sync($left, $right, 0, 0);
+}
+
+sub internal_sync{
+    my ($self, $left, $right, $flag_simulation, $flag_verbose) = @_;
+	printf "left:  %s\nright: %s\n", $left, $right if($flag_verbose);
     # 양쪽 모두 디렉토리라야 한다.
     unless(-d $left and -d $right){
+		print "[ERROR] sync failed. left, right must be directories\n";
 		return -1;
     }
     # left 가 가지고 있는 파일들을 순회하면서 right 가 동일 위치에 같은 이름이 있는지 확인한다.
@@ -33,9 +49,12 @@ sub unite{
     my $left_prefix_size = length($left);
     foreach my $from (keys %left_hash){
 		my $to = sprintf "%s%s", $right, substr($from, $left_prefix_size);
+		printf "[CHECK]         %s\n", $from if($flag_verbose);
 		unless(-f $to){
-			printf "FROM [%s]\nTO   [%s]\n", $from, $to;
-			unless($flag_simulation){
+			if($flag_simulation){
+				printf "[FOUND-DISPLAY] FROM [%s]\nTO   [%s]\n", $from, $to;
+			}else{
+				printf "[FOUND-COPY]    FROM [%s]\nTO   [%s]\n", $from, $to;
 				$self->copy_file($from, $to);
 			}
 		}
