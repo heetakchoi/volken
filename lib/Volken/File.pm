@@ -10,10 +10,19 @@ sub get_files;
 sub new{
     my ($class) = @_;
     my $self = {};
+    $self->{"check_count"} = 0;
+    $self->{"copy_count"} = 0;
     bless($self, $class);
     return $self;
 }
-
+sub get_check_count{
+    my ($self) = @_;
+    return $self->{"check_count"};
+}
+sub get_copy_count{
+    my ($self) = @_;
+    return $self->{"copy_count"};
+}
 sub check{
 	my ($self, $left, $right) = @_;
 	$self->internal_sync($left, $right, "SIMULATION", "VERBOSE");
@@ -49,6 +58,7 @@ sub internal_sync{
     my $left_prefix_size = length($left);
     foreach my $from (keys %left_hash){
 		my $to = sprintf "%s%s", $right, substr($from, $left_prefix_size);
+		$self->{"check_count"} = $self->{"check_count"} +1;
 		printf "[CHECK]         %s\n", $from if($flag_verbose);
 		unless(-f $to){
 			if($flag_simulation){
@@ -56,6 +66,7 @@ sub internal_sync{
 			}else{
 				printf "[FOUND-COPY]    FROM [%s]\nTO   [%s]\n", $from, $to;
 				$self->copy_file($from, $to);
+				$self->{"copy_count"} = $self->{"copy_count"} +1;
 			}
 		}
     }
