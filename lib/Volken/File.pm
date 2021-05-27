@@ -40,11 +40,21 @@ sub sync_silent{
 sub internal_sync{
     my ($self, $left, $right, $flag_simulation, $flag_verbose) = @_;
 	printf "left:  %s\nright: %s\n", $left, $right if($flag_verbose);
-    # 양쪽 모두 디렉토리라야 한다.
-    unless(-d $left and -d $right){
-		print "[ERROR] sync failed. left, right must be directories\n";
+    # left 는 디렉토리라야 한다.
+    unless(-d $left){
+		print "[ERROR] sync failed. left must be a directory\n";
 		return -1;
     }
+
+	# right 가 없으면 만든다.
+	unless(-e $right){
+		mkdir $right;
+	}
+	# right 가 있으나 파일이면 종료한다.
+	if(-f $right){
+		print "[ERROR] sync failed. right must be a directory\n";
+	}
+	
     # left 가 가지고 있는 파일들을 순회하면서 right 가 동일 위치에 같은 이름이 있는지 확인한다.
     my @left_files = ();
     get_files(\@left_files, $left);
@@ -59,12 +69,12 @@ sub internal_sync{
     foreach my $from (keys %left_hash){
 		my $to = sprintf "%s%s", $right, substr($from, $left_prefix_size);
 		$self->{"check_count"} = $self->{"check_count"} +1;
-		printf "[CHECK]         %s\n", $from if($flag_verbose);
+		printf "[CHECK]              %s\n", $from if($flag_verbose);
 		unless(-f $to){
 			if($flag_simulation){
-				printf "[FOUND-DISPLAY] FROM [%s]\nTO   [%s]\n", $from, $to;
+				printf "[FOUND-DISPLAY] FROM %s\n                TO   %s\n", $from, $to;
 			}else{
-				printf "[FOUND-COPY]    FROM [%s]\nTO   [%s]\n", $from, $to;
+				printf "[FOUND-COPY]    FROM %s\nTO               TO  %s\n", $from, $to;
 				$self->copy_file($from, $to);
 				$self->{"copy_count"} = $self->{"copy_count"} +1;
 			}
@@ -90,16 +100,10 @@ sub copy_file{
     unless(-f $src){
 		return -1;
     }
-    # dest 가 확장자를 가지면 파일로 간주한다.
-    # dest 가 디렉토리이면 동일한 이름으로 복사한다.
     my $dest_file = undef;
     my @dest_elements = split m/\//, $dest;
-    if($dest_elements[-1] =~ m/\./){
-		$dest_file = pop(@dest_elements);
-    }else{
-		my @src_elements = split m/\//, $src;
-		$dest_file = pop(@src_elements);
-    }
+
+	$dest_file = pop(@dest_elements);
 
     # dest 의 위치를 상위에서부터 찾아 없으면 만든다.
     my $dest_location = "";

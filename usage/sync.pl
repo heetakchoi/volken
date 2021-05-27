@@ -6,11 +6,17 @@ use warnings;
 use lib "../lib";
 use Volken::File;
 
-# my $left = "/home1/irteam/backup/back-work-2020-02-12_15-22-08/www/survey_file_root";
-# my $right = "/home1/irteam/work/www/survey_file_root";
+my $left = "/home/eoh/home/repos/volken/usage/s-from";
+my $right = "/home/eoh/home/repos/volken/usage/s-to";
 
-my $left = "/home1/irteam/tmp/work-304";
-my $right = "/home1/irteam/tmp/work-305";
+my $option = shift;
 
 my $file = Volken::File->new;
-$file->unite($left, $right, 1);
+if("check" eq $option){
+	$file->check($left, $right);
+}elsif("sync" eq $option){
+	$file->sync($left, $right);
+}else{
+	$file->sync_silent($left, $right);
+}
+printf "Copied %d in the %d files\n", $file->get_copy_count, $file->get_check_count;
