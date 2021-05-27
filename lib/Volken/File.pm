@@ -3,6 +3,7 @@ package Volken::File;
 use strict;
 use warnings;
 
+use Cwd qw(abs_path);
 use File::Copy;
 
 sub get_files;
@@ -39,10 +40,12 @@ sub sync_silent{
 
 sub internal_sync{
     my ($self, $left, $right, $flag_simulation, $flag_verbose) = @_;
+	$left = abs_path($left);
+	$right = abs_path($right);
 	printf "left:  %s\nright: %s\n", $left, $right if($flag_verbose);
     # left 는 디렉토리라야 한다.
     unless(-d $left){
-		print "[ERROR] sync failed. left must be a directory\n";
+		print "[ERROR] Failed. Left must be a directory.\n";
 		return -1;
     }
 
@@ -52,7 +55,8 @@ sub internal_sync{
 	}
 	# right 가 있으나 파일이면 종료한다.
 	if(-f $right){
-		print "[ERROR] sync failed. right must be a directory\n";
+		print "[ERROR] Failed. There is already a file which has same name.\n";
+		return -1;
 	}
 	
     # left 가 가지고 있는 파일들을 순회하면서 right 가 동일 위치에 같은 이름이 있는지 확인한다.
@@ -69,13 +73,18 @@ sub internal_sync{
     foreach my $from (keys %left_hash){
 		my $to = sprintf "%s%s", $right, substr($from, $left_prefix_size);
 		$self->{"check_count"} = $self->{"check_count"} +1;
-		printf "[CHECK]              %s\n", $from if($flag_verbose);
+		printf "[CHECK]         %s\n", $from if($flag_verbose);
 		unless(-f $to){
 			if($flag_simulation){
-				printf "[FOUND-DISPLAY] FROM %s\n                TO   %s\n", $from, $to;
+				printf "[FOUND-DISPLAY] %s\n             => %s\n", $from, $to;
 			}else{
-				printf "[FOUND-COPY]    FROM %s\nTO               TO  %s\n", $from, $to;
-				$self->copy_file($from, $to);
+				printf "[FOUND-COPY]    %s\n", $from;
+				my $copy_msg = $self->copy_file($from, $to);
+				if($copy_msg){
+					printf "[COPY-SUCCESS]  %s\n", $to;
+				}else{
+					printf "[COPY-FAIL   ]  %s\n", $to;
+				}
 				$self->{"copy_count"} = $self->{"copy_count"} +1;
 			}
 		}

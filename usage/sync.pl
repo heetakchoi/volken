@@ -6,8 +6,8 @@ use warnings;
 use lib "../lib";
 use Volken::File;
 
-my $left = "/home/eoh/home/repos/volken/usage/s-from";
-my $right = "/home/eoh/home/repos/volken/usage/s-to";
+my $left = "s-from";
+my $right = "s-to";
 
 my $option = shift;
 
