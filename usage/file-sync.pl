@@ -6,10 +6,12 @@ use warnings;
 use lib "../lib";
 use Volken::File;
 
+# my $left = "s-from";
 my $left = "s-from";
 my $right = "s-to";
 
 my $option = shift;
+$option = "check" unless(defined($option));
 
 my $file = Volken::File->new;
 if("check" eq $option){
