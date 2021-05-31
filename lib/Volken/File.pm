@@ -121,10 +121,14 @@ sub copy_file{
     $dest_file = pop(@dest_elements);
 
     # dest 의 위치를 상위에서부터 찾아 없으면 만든다.
+    my $win_flag = 0;
+    if($^O =~ m/Win/){
+	$win_flag = 1;
+    }
     my $dest_location = "";
     foreach (@dest_elements){
 	my $current_location;
-	if($dest_location eq ""){
+	if($win_flag and $dest_location eq ""){
 	    $current_location = sprintf "%s", $_;
 	}else{
 	    $current_location = sprintf "%s/%s", $dest_location, $_;
