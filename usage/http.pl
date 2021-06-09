@@ -8,6 +8,7 @@ use lib "../lib";
 use Volken::Http;
 use Volken::Https;
 
+sub test_a;
 sub test_Https_emulated_post;
 sub test_Https_post;
 sub test_Https_emulated_get;
@@ -21,8 +22,9 @@ binmode(STDIN,  ":encoding(cp949)");
 binmode(STDOUT, ":encoding(cp949)");
 
 my $result = "";
+$result = test_a;
 # $result = test_Https_emulated_post;
-$result = test_Https_post;
+# $result = test_Https_post;
 # $result = test_Https_emulated_get;
 # $result = test_Https_get;
 # $result = test_Http_emulated_post;
@@ -31,6 +33,14 @@ $result = test_Https_post;
 # $result = test_Http_get;
 print decode("utf-8", $result);
 
+sub test_a{
+    my $https = Volken::Https->new;
+    $https->host("band.us")
+	->url("/page/78554587/post/2")
+	->header("Host", "band.us")
+	;
+    return $https->post;
+}
 sub test_Https_emulated_post{
     my $https = Volken::Https->new;
     $https->host("developers.band.us")
