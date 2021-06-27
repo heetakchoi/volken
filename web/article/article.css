@@ -1,0 +1,28 @@
+#article-header{
+}
+#article-footer{
+}
+#article-content{
+    border-style: solid;
+    border-width: 1px;
+}
+.article{
+    border-style: solid;
+    border-width: 1px;
+}
+.article .created{
+
+}
+.article .title{
+
+}
+.article .toggle{
+
+}
+.article .detail{
+    border-style: solid;
+    border-width: 0px;
+    border-left-width: 1px;
+    margin-left: 30px;
+    padding-left: 10px;
+}
