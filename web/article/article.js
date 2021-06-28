@@ -11,45 +11,38 @@ for (let one in params){
 // 파라메터 처리 종료
 
 // 초기화 시작
-function api_list_articles(upper, callback_func){
+function api_list_articles(callback_func, upper){
     var xhr = new XMLHttpRequest();
     xhr.addEventListener("load", callback_func);
     xhr.open("GET", `ListArticles.cgi?upper=${upper}`);
     xhr.send();
 }
-function api_get_article(srno, callback_func){
+function api_get_article(callback_func, srno){
     var xhr = new XMLHttpRequest();
+    xhr.srno = srno;
     xhr.addEventListener("load", callback_func);
     xhr.open("GET", `ViewArticle.cgi?srno=${srno}`);
     xhr.send();
 }
-var detail_srno;
+// var detail_srno;
 function make_detail_view(){
     // 본문이 들어 있을 것으로 기대하고 toggle 클래스를 가진 toggle_element 를 모두 가져와 본다.
     let detail_list = document.querySelectorAll(".toggle");
     // 같은 srno 를 가진 것 뒤에 detail 를 붙인다.
+    let srno = this.srno;
     for(let one_detail of detail_list){
-	if(one_detail.dataset.srno == detail_srno){
+	if(one_detail.dataset.srno == srno){
 	    const json_data = JSON.parse(this.responseText);
-	    let one_li = one_detail.parentElement;
+	    let one_article = one_detail.parentElement;
 
 	    let view_div = document.createElement("div");
 	    view_div.className = "detail";
-
-	    // let title_div = document.createElement("div");
-	    // title_div.innerHTML = json_data.title;
-	    // view_div.append(title_div);
-
-	    // let created_div = document.createElement("div");
-	    // created_div.innerHTML = json_data.created;
-	    // view_div.append(created_div);
 
 	    let content_div = document.createElement("div");
 	    content_div.innerHTML = json_data.content;
 	    view_div.append(content_div);
 
-
-	    one_li.append(view_div);
+	    one_article.append(view_div);
 	}
     }
 }
@@ -60,12 +53,11 @@ function toggle_detail_view(event){
     // detail_view 를 지워버린다.
     let span_element = event.target;
     let srno = event.target.dataset.srno;
-    detail_srno = srno;
     let status = event.target.dataset.status;
     if(status == "expand"){
 	span_element.innerHTML = "닫기";
 	event.target.dataset.status = "collapse";
-	api_get_article(srno, make_detail_view);
+	api_get_article(make_detail_view, srno);
     }else{
 	span_element.innerHTML = "열기";
 	event.target.dataset.status = "expand";
@@ -110,12 +102,12 @@ function make_list_view(){
     );
     return;
 }
-api_list_articles(0, make_list_view);
+api_list_articles(make_list_view, 0);
 // 초기화 종료
 
 //  more button 처리 시작
 function more_articles(){
-    api_list_articles(upper, make_list_view);
+    api_list_articles(make_list_view, upper);
 }
 const more_button_list = document.querySelectorAll(".more-button");
 for( let more_button of more_button_list){
