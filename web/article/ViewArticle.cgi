@@ -36,7 +36,7 @@ while(my @rows = $sth->fetchrow_array()){
     $content =~ s/\r\n/<br \/>/g;
     $content =~ s/\\/\\\\/g;
     $content =~ s/\"/\\"/g;
-    $content =~ s/\//\\\//g;
+    # $content =~ s/\//\\\//g;
 
     printf "  \"content\": \"%s\"", $content;
     print  "\n";
