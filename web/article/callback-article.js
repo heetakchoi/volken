@@ -107,9 +107,11 @@ function make_list_view(){
 	    upper = item.srno;
 	}
     );
+    MathJax.typeset();
     return;
 }
 api_list_articles(make_list_view, 0);
+
 // 초기화 종료
 
 //  more button 처리 시작

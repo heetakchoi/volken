@@ -56,14 +56,13 @@ function fetch_one_article(srno){
 		    view_div.append(content_div);
 
 		    one_article.append(view_div);
-
-		    MathJax.typeset();
 		    break;
 		}
 	    }
-	})
-	.catch(error=>{
+	}).catch(error=>{
 	    console.log(error);
+	}).finally(function(){
+	    MathJax.typeset();
 	});
     return;
 }
@@ -127,9 +126,10 @@ function fetch_articles(arg_upper){
 		    upper = item.srno;
 		}
 	    );
-	})
-	.catch(error=>{
+	}).catch(error=>{
 	    console.log(error);
+	}).finally(()=>{
+	    MathJax.typeset();
 	});
     return;
 }
