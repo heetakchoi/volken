@@ -45,6 +45,9 @@ function make_detail_view(){
 	    view_div.append(content_div);
 
 	    one_article.append(view_div);
+
+	    MathJax.typeset();
+	    break;
 	}
     }
 }

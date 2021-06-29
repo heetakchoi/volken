@@ -56,6 +56,9 @@ function fetch_one_article(srno){
 		    view_div.append(content_div);
 
 		    one_article.append(view_div);
+
+		    MathJax.typeset();
+		    break;
 		}
 	    }
 	})
