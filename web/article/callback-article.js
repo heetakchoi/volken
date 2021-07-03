@@ -24,7 +24,23 @@ function api_get_article(callback_func, srno){
     xhr.open("GET", `ViewArticle.cgi?srno=${srno}`);
     xhr.send();
 }
-// var detail_srno;
+
+function html_output(data){
+    data = data.replace(/-\(-/gi, "<span style=\"text-decoration:line-through;\">");
+    data = data.replace(/-\(b/gi, "<span style=\"font-weight:bold\">");
+    data = data.replace(/-\(i/gi, "<span style=\"font-weight:italic\">");
+
+    data = data.replace(/-\(L4/gi, "<span style=\"font-size:larger\"><span style=\"font-size:larger\"><span style=\"font-size:larger\"><span style=\"font-size:larger\">");
+    data = data.replace(/-\(I5/gi, "<span style=\"font-size:larger\"><span style=\"font-size:larger\"><span style=\"font-size:larger\"><span style=\"font-size:larger\"><span style=\"font-weight:italic\">");
+
+    data = data.replace(/-\)-/gi, "</span>");
+    data = data.replace(/-2\)-/gi, "</span></span>");
+    data = data.replace(/-3\)-/gi, "</span></span></span>");
+    data = data.replace(/-4\)-/gi, "</span></span></span></span>");
+    data = data.replace(/-5\)-/gi, "</span></span></span></span></span>");
+
+    return data;
+}
 function make_detail_view(){
     // 본문이 들어 있을 것으로 기대하고 toggle 클래스를 가진 toggle_element 를 모두 가져와 본다.
     let detail_list = document.querySelectorAll(".toggle");
@@ -41,6 +57,7 @@ function make_detail_view(){
 	    let content_div = document.createElement("div");
 	    let content = json_data.content;
 	    content.replace(/\\\\/g, "\\");
+	    content = html_output(content);
 	    content_div.innerHTML = content;
 	    view_div.append(content_div);
 

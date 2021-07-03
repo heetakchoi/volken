@@ -31,7 +31,22 @@ function promiseXHR(obj){
     });
 }
 // Promise XmlHttpRequest 종료
+function html_output(data){
+    data = data.replace(/-\(-/gi, "<span style=\"text-decoration:line-through;\">");
+    data = data.replace(/-\(b/gi, "<span style=\"font-weight:bold\">");
+    data = data.replace(/-\(i/gi, "<span style=\"font-weight:italic\">");
 
+    data = data.replace(/-\(L4/gi, "<span style=\"font-size:larger\"><span style=\"font-size:larger\"><span style=\"font-size:larger\"><span style=\"font-size:larger\">");
+    data = data.replace(/-\(I5/gi, "<span style=\"font-size:larger\"><span style=\"font-size:larger\"><span style=\"font-size:larger\"><span style=\"font-size:larger\"><span style=\"font-weight:italic\">");
+
+    data = data.replace(/-\)-/gi, "</span>");
+    data = data.replace(/-2\)-/gi, "</span></span>");
+    data = data.replace(/-3\)-/gi, "</span></span></span>");
+    data = data.replace(/-4\)-/gi, "</span></span></span></span>");
+    data = data.replace(/-5\)-/gi, "</span></span></span></span></span>");
+
+    return data;
+}
 function fetch_one_article(srno){
     let param = new Object();
     param.url = `ViewArticle.cgi?srno=${srno}`;
@@ -52,6 +67,7 @@ function fetch_one_article(srno){
 		    let content_div = document.createElement("div");
 		    let content = json_data.content;
 		    content.replace(/\\\\/g, "\\");
+		    content = html_output(content);
 		    content_div.innerHTML = content;
 		    view_div.append(content_div);
 
@@ -154,3 +170,4 @@ for( let toggle_element of toggle_element_list){
     toggle_element.addEventListener("click", toggle_detail_view);
 }
 // view 처리 끝
+
