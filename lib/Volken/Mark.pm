@@ -8,8 +8,8 @@ use warnings;
 # '- ' 로 시작하면 ul li
 # 빈 문자열은 div 로 구분
 # '<pre>', '</pre>' 로 시작하면 verbatim 모드 시작/종료
-
 # 'h숫자. ' 로 시작하면 해당 라인을 숫자에 해당하는 h태그로 전환
+
 sub proc_heading{
     my ($line) = @_;
     if($line =~ /^h(\d). /i){
@@ -55,18 +55,52 @@ sub get_html{
     my $before_status = "INIT";
 
     my $pre_flag = 0;
-
+    
     while(my $line = <$fh>){
 	if($line =~ /^<pre>/i){
+	    # verbatim 모드가 시작되면 기존 문맥은 종료시킨다.
+	    if($before_status eq "INIT"){
+		# 초기 상태라면 첫 줄부터 공백이다. 이 경우 이전 줄에 대한 처리는 필요없다.
+
+	    }elsif($before_status eq "blank"){
+		# 이전 줄이 공백이었으면 br
+		$content .= "<br />\n";
+		
+	    }elsif($before_status eq "normal"){
+		# 이전 줄이 일반 문장이면 문단이 끝났다고 보고 div를 닫는다.
+		$before_line =~ s/\s+$//;
+		$content .= proc_heading($before_line);
+		$content .= "\n";
+		$content .= "</div>\n";
+		
+	    }elsif($before_status eq "quote"){
+		# 이전 줄이 인용이었으면 인용으로 문단이 끝났다고 보고 quote와 div 를 차례로 닫는다.
+		$before_line =~ s/\s+$//;
+		$content .= sprintf "    %s\n", substr($before_line, 2);
+		$content .= "  </blockquote>\n";
+		$content .= "</div>\n";
+	    }elsif($before_status eq "ulist"){
+		# 이전 줄이 u리스트였으면 리스트로 문단이 끝났다고 보고 ul 과 div 를 차례로 닫는다.
+		$before_line =~ s/\s+$//;
+		$content .= sprintf "    <li>%s</li>\n", substr($before_line, 2);
+		$content .= "  </ul>\n";
+		$content .= "</div>\n";
+	    }else{
+		# 고려하지 않은 경우.
+		$content .= "[unknown 0]<br />\n";
+	    }
+	    
 	    $content .= "<pre>\n";
 	    $pre_flag = 1;
 	    next;
 	}
 	if($pre_flag){
 	    if($line =~ /^<\/pre>/i){
+		# verbatim 모드가 종료되었으면 문장 모드를 초기화시킨다.
+		$before_status = "INIT";
+		$before_line = "";
 		$content .= "</pre>\n";
 		$pre_flag = 0;
-		next;
 	    }else{
 		$content .= $line;
 	    }
@@ -237,8 +271,7 @@ sub get_html{
     }
     # 처리하지 않은 마지막 문자열이 before_line 에 들어있다.
     if($before_status eq "INIT"){
-	# 내용이 없는 경우이므로 오류를 낸다.
-	die "내용이 없다\n";
+	# 일단 무시한다.
 	
     }elsif($before_status eq "blank"){
 	# 마지막에 오는 공백 문자열은 의미 없으므로 무시한다.
