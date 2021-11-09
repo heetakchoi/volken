@@ -7,7 +7,6 @@ use DBI;
 use lib "../lib";
 use Volken::Prop;
 
-
 sub trim;
 
 my $break_flag = 0;
@@ -46,14 +45,16 @@ my $dbn = sprintf "DBI:mysql:database=%s", $database;
 printf "- Now we try to connect Database: %s Username: %s\n", $database, $username unless($break_flag);
 
 my $dbh = DBI->connect($dbn, $username, $password) or die $DBI::errstr;
-
 while(!$break_flag){
-    print  "- SQL: ";
     my $input = "";
     my $line_number = 0;
     while(my $line=<STDIN>){
 	$line_number ++;
 	chomp($line);
+	if("q" eq $line){
+	    $break_flag = 1;
+	    last;
+	}
 	my $end_index = index($line, ";");
 	if($end_index>0){
 	    $line = substr($line, 0, $end_index);
@@ -62,28 +63,34 @@ while(!$break_flag){
 	$input .= $line;
 	last if($end_index >0);
     }
+    last if($break_flag);
     $input = trim($input);
     printf "INPUT: %s\n", $input;
     my $sql = $input;
-    my $sth = $dbh->prepare($sql);
-    $sth->execute();
-    print "-"x80, "\n";
-    while(my @row = $sth->fetchrow_array()){
-	foreach my $item (@row){
-	    $item = "" unless(defined($item));
-	    printf "| %s ", $item;
+    my $sth;
+    if($sql =~ m/^select/i
+       or $sql =~ m/^show/i
+       or $sql =~ m/^desc/i ){
+	$sth = $dbh->prepare($sql);
+	$sth->execute();
+	print "-"x80, "\n";
+	while(my @row = $sth->fetchrow_array()){
+	    foreach my $item (@row){
+		$item = "" unless(defined($item));
+		printf "| %s ", $item;
+	    }
+	    print "|\n";
 	}
-	print "|\n";
+	$sth->finish();
+    }else{
+	$sth = $dbh->prepare($sql);
+	printf "%s\n", $sth->execute();
+	$sth->finish();
     }
-    $sth->finish();
     print "#"x80, "\n";
-    print "Enter to continue. Type q to quit.\n";
-    my $cmd = <STDIN>;
-    chomp($cmd);
-    last if("q" eq $cmd);
+    print "Type q to quit.\n";
 }
 $dbh->disconnect();
-
 
 sub trim{
     my $arg = $_[0];
