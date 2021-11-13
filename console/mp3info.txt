@@ -1,0 +1,9 @@
+File [mp3 file which you want to cut into pieces]
+Album [Album name which you assign]
+##########
+# comment - line which start with # is ignored.
+# mm:dd singer SEPARATOR title
+# 
+00:00 First singer - first title
+01:23 Second singer - second title
+04:56
