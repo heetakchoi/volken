@@ -29,7 +29,15 @@ while(my $line = <$fh>){
     }elsif($line =~ m/Album (.+)$/){
 	$album = $1;
     }elsif($line =~ m/^(\d+):(\d+)/){
-	my $current_time = 60*$1 + $2;
+	my $minute = $1;
+	my $second = $2;
+	my $hour = 0;
+	if($line =~ m/^(\d+):(\d+):(\d+)/){
+	    $hour = $1;
+	    $minute = $2;
+	    $second = $3;
+	}
+	my $current_time = 3600*$hour + 60*$minute + $second;
 	my $separator_index = index($line, $separator);
 	if($separator_index > 0){
 	    my $left_start_index = index($line, " ");
