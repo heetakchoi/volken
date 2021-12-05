@@ -95,18 +95,27 @@ foreach my $one_info (@infos){
 
     my $mp3 = MP3::Tag->new($one_filename);
     $mp3->get_tags();
-    my $id3v1 = $mp3->{ID3v1};
-    if(defined($id3v1)){
+
+    $mp3->new_tag("ID3v2");
+    $mp3->title_set($one_title, 1);
+    $mp3->artist_set($one_artist, 1);
+    $mp3->album_set($album, 1);
+    $mp3->track_set($one_track, 1);
+    $mp3->{ID3v2}->write_tag;
+    
+    # my $id3v1 = $mp3->{ID3v1};
+    # if(defined($id3v1)){
 	
-    }else{
-	$id3v1 = $mp3->new_tag("ID3v1");
-	$mp3->{ID3v1} = $id3v1;
-    }
-    $id3v1->title($one_title);
-    $id3v1->artist($one_artist);
-    $id3v1->album($album);
-    $id3v1->track($one_track);
-    $id3v1->write_tag();
+    # }else{
+    # 	$id3v1 = $mp3->new_tag("ID3v1");
+    # 	$mp3->{ID3v1} = $id3v1;
+    # }
+    # $id3v1->title($one_title);
+    # $id3v1->artist($one_artist);
+    # $id3v1->album($album);
+    # $id3v1->track($one_track);
+    # $id3v1->write_tag();
+    
     $mp3->close();
 }
 
