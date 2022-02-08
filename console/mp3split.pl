@@ -20,8 +20,10 @@ my @infos = ();
 my $separator = " - ";
 my $title_artist_flag = 0;
 
+my $line_number = 0;
 open(my $fh, "<", "mp3info.txt");
 while(my $line = <$fh>){
+    $line_number ++;
     chomp $line;
     $line =~ s/^\d+ //;
     if($line =~ m/^#/){
@@ -91,7 +93,9 @@ while(my $line = <$fh>){
 	    push(@infos, $one_info);
 	}
     }else{
-	printf "[ERR] %s\n", $line;
+	if(trim($line)){
+	    printf "[ERR] %s\n", $line;
+	}
     }
 }
 close($fh);
