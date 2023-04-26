@@ -2,6 +2,7 @@
 # Directive list
 # File (mp3 filename)
 # Album (Album name)
+# Artist (optional. every track has one artist name)
 # TitleFirstFlag ( 0: [artist] separator [title], others: [title] separator [artist] )
 # Separator ( Words braced with double quote. By which song title and artist information are divided )
 

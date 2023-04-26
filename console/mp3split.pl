@@ -5,6 +5,8 @@ use warnings;
 
 use MP3::Splitter;
 use MP3::Tag;
+use File::Copy qw(move);
+use utf8;
 
 sub opt;
 sub trim;
@@ -19,6 +21,10 @@ my @time_list = ();
 my @infos = ();
 my $separator = " - ";
 my $title_artist_flag = 0;
+my $represent_artist;
+
+my $filename = shift;
+$filename = "mp3info.txt" unless(defined($filename));
 
 my $line_number = 0;
 open(my $fh, "<", "mp3info.txt");
