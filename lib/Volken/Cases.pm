@@ -1,18 +1,23 @@
-package Volken::Prob;
+package Volken::Cases;
 
 use strict;
 use warnings;
 
 sub new{
-    my ($class) = @_;
+    my ($class, @n_list) = @_;
     my $self = {};
+    $self->{"n"} = \@n_list;
     bless($self, $class);
     return $self;
 }
 sub nCr{
-    my ($self, $r_count, @n_list) = @_;
+    my ($self, $r_count, @neo_list) = @_;
     my @result_list = ();
-    combination(\@result_list, $r_count, [], @n_list);
+    if(@neo_list){
+	combination(\@result_list, $r_count, [], @neo_list);
+    }else{
+	combination(\@result_list, $r_count, [], @{$self->{"n"}});
+    }
     return @result_list;
 }
 sub combination{
@@ -39,4 +44,4 @@ sub combination{
 	return;
     }
 }
-return "Volken::Prob";
+return "Volken::Cases";
