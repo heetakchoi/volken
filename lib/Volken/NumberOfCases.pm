@@ -1,4 +1,4 @@
-package Volken::Cases;
+package Volken::NumberOfCases;
 
 use strict;
 use warnings;
@@ -44,4 +44,4 @@ sub combination{
 	return;
     }
 }
-return "Volken::Cases";
+return "Volken::NumberOfCases";
