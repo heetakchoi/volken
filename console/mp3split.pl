@@ -5,6 +5,8 @@ use warnings;
 
 use MP3::Splitter;
 use MP3::Tag;
+use File::Copy qw(move);
+use utf8;
 
 sub opt;
 sub trim;
@@ -18,15 +20,27 @@ my $time;
 my @time_list = ();
 my @infos = ();
 my $separator = " - ";
+my $title_artist_flag = 0;
+my $represent_artist;
 
+my $filename = shift;
+$filename = "mp3info.txt" unless(defined($filename));
+
+my $line_number = 0;
 open(my $fh, "<", "mp3info.txt");
 while(my $line = <$fh>){
+    $line_number ++;
     chomp $line;
+    $line =~ s/^\d+ //;
     if($line =~ m/^#/){
 	next;
-    }elsif($line =~ m/File (.+)$/){
+    }elsif($line =~ m/^Separator "([^"]+)"$/){
+	$separator = $1;
+    }elsif($line =~ m/^TitleFirstFlag (\d)$/){
+	$title_artist_flag = $1;
+    }elsif($line =~ m/^File (.+)$/){
 	$mp3file = $1;
-    }elsif($line =~ m/Album (.+)$/){
+    }elsif($line =~ m/^Album (.+)$/){
 	$album = $1;
     }elsif($line =~ m/^(\d+):(\d+)/){
 	my $minute = $1;
@@ -43,6 +57,11 @@ while(my $line = <$fh>){
 	    my $left_start_index = index($line, " ");
 	    my $current_artist = trim(substr($line, $left_start_index+1, $separator_index - $left_start_index -1));
 	    my $current_title = trim(substr($line, $separator_index + length($separator)));
+	    if($title_artist_flag){
+		my $tmp = $current_title;
+		$current_title = $current_artist;
+		$current_artist = $tmp;
+	    }
 	    unless(defined($time)){
 		$time = $current_time;
 		$artist = $current_artist;
@@ -80,7 +99,9 @@ while(my $line = <$fh>){
 	    push(@infos, $one_info);
 	}
     }else{
-	printf "[ERR] %s\n", $line;
+	if(trim($line)){
+	    printf "[ERR] %s\n", $line;
+	}
     }
 }
 close($fh);

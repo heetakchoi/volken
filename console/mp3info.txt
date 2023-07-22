@@ -1,5 +1,15 @@
+##########
+# Directive list
+# File (mp3 filename)
+# Album (Album name)
+# Artist (optional. every track has one artist name)
+# TitleFirstFlag ( 0: [artist] separator [title], others: [title] separator [artist] )
+# Separator ( Words braced with double quote. By which song title and artist information are divided )
+
 File [mp3 file which you want to cut into pieces]
 Album [Album name which you want to assign]
+TitleFirstFlag 0
+Separator " - "
 ##########
 # comment - line which starts with # is ignored.
 # mm:dd singer SEPARATOR title

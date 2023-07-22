@@ -1,14 +1,10 @@
 #!/usr/bin/perl
-
 use strict;
 use warnings;
-
 use lib "../lib";
 use Volken::ZN;
 use Volken::PF;
 use Volken::QN;
-
-
 my @lefts = ("8/9", "-8/9");
 my @rights = ("25/12", "-25/12");
 foreach my $left (@lefts){
@@ -23,10 +19,6 @@ foreach my $left (@lefts){
 		print  "\n";
 	}
 }
-
 my ($one) = ("-200/108");
 my $one_qn = Volken::QN->new($one);
 printf "%s is equivalent to %s\n", $one, $one_qn->shrink->get("rawdata");
-
-
-
