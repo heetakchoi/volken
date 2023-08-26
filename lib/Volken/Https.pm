@@ -16,6 +16,7 @@ sub new{
     $self->{"headers"} = {};
     $self->{"params"} = {};
     $self->{"ssl_verify_mode"} = SSL_VERIFY_PEER;
+    $self->{"part_index"} = 0;
     bless($self, $class);
     return $self;
 }
@@ -41,7 +42,7 @@ sub get{
     
     my %header_map = %{ $self->{"headers"}};
     unless(defined($header_map{"Host"})){
-	if($port eq 80){
+	if($port eq 443){
 	    $header_map{"Host"} = sprintf("%s", $host);
 	}else{
 	    $header_map{"Host"} = sprintf("%s:%d", $host, $port);
@@ -99,6 +100,133 @@ sub get{
 	return $response_body;
     }
 }
+sub multipart{
+    my ($self) = @_;
+
+    my $end_part = Volken::Part->new;
+    add_part($self, $end_part);
+    
+    my $host = $self->{"host"};
+    my $port = $self->{"port"};
+    $port = 443 unless(defined($port));
+    
+    my $boundary = sprintf ("----------%s", int(rand(10000_0000)));
+
+    my $req_uri = $self->{"url"};
+    my $request_line = sprintf "POST %s HTTP/1.1\r\n", $req_uri;
+
+    my %header_map = %{ $self->{"headers"}};
+    unless(defined($header_map{"Host"})){
+	if($port eq 443){
+	    $header_map{"Host"} = sprintf("%s", $host);
+	}else{
+	    $header_map{"Host"} = sprintf("%s:%d", $host, $port);
+	}
+    }
+    unless(defined($header_map{"Connection"})){
+	$header_map{"Connection"} = "close";
+    }
+    unless(defined($header_map{"Content-Type"})){
+	$header_map{"Content-Type"} = sprintf("multipart/form-data; boundary=%s", $boundary);
+    }
+
+    my $request_body = "";
+    my $total_size = 0;
+    
+    foreach my $one_key (sort {$a<=>$b} keys %{$self->{"parts"}}){
+	my $one_part = $self->{"parts"}->{$one_key};
+	$one_part->build($boundary);
+
+	$total_size += $one_part->get("size");
+	$request_body .= $one_part->get("header");
+	if("VALUE" eq $one_part->get("type")){
+	    $request_body .= $one_part->get("value");
+	}elsif("FILE" eq $one_part->get("type")){
+	    my $filelocation = $one_part->get("filelocation");
+	    open(my $fh, "<", $filelocation);
+	    binmode $fh;
+	    while(<$fh>){
+		$request_body .= $_;
+	    }
+	    close($fh);
+	}
+    }
+    $total_size -= 4;
+    $header_map{"Content-Length"} = $total_size;
+
+    my $request_head = "";
+    foreach my $header_key (keys %header_map){
+	my $header_value = $header_map{$header_key};
+	$request_head .= sprintf "%s: %s\r\n", $header_key, $header_value;
+    }
+    my $raw_request = $request_line . $request_head . $request_body;
+    $self->{"raw_request"} = $raw_request;
+
+    my $emulate_flag = $self->{"emulate_flag"};
+    if($emulate_flag){
+	return "";
+    }else{
+	my $socket = IO::Socket::SSL->new(
+	    PeerHost=> $host,
+	    PeerPort=>$port,
+	    SSL_verify_mode => $self->{"ssl_verify_mode"},
+	    SSL_ca_file => Mozilla::CA::SSL_ca_file(),
+	    ) or die "Can't connect: $@";
+	$socket->verify_hostname($host, "http")
+	    || die "hostname verification failure";
+	
+	# print $socket $raw_request;
+	print $socket $request_line;
+	print $socket $request_head;
+	foreach my $one_key (sort {$a<=>$b} keys %{$self->{"parts"}}){
+	    my $one_part = $self->{"parts"}->{$one_key};
+	    print $socket $one_part->get("header");
+	    if("VALUE" eq $one_part->get("type")){
+		print $socket $one_part->get("value");
+	    }elsif("FILE" eq $one_part->get("type")){
+		my $filelocation = $one_part->get("filelocation");
+		open(my $fh, "<", $filelocation);
+		binmode $fh;
+		while(<$fh>){
+		    print $socket $_;
+		}
+		close($fh);
+	    }
+	}	
+
+	my $raw_response = "";
+	while(<$socket>){
+	    $raw_response .= $_;
+	}
+	$self->{"raw_response"} = $raw_response;
+	shutdown($socket, 2);
+	$socket->close();
+
+	my $neck_index = index($raw_response, "\r\n\r\n");
+	my $response_head = substr($raw_response, 0, $neck_index);
+	my $response_body = substr($raw_response, $neck_index + 4);
+	my @response_headers = split(/\r\n/, $response_head);
+	my $chunked_flag = 0;
+	foreach my $response_header (@response_headers){
+	    if($response_header =~ m/Transfer-Encoding/
+	       && $response_header =~ m/chunked/){
+		$chunked_flag = 1;
+		last;
+	    }
+	}
+	if($chunked_flag){
+	    $response_body = unchunk($response_body);
+	}
+	return $response_body;
+    }
+}
+sub add_part{
+    my ($self, $one_part) = @_;
+    my $part_index = $self->{"part_index"};
+    $self->{"parts"}->{$part_index} = $one_part;
+    $self->{"part_index"} = $part_index +1;
+    return $self;
+}
 sub post{
     my ($self) = @_;
     my $host = $self->{"host"};
@@ -110,7 +238,7 @@ sub post{
     
     my %header_map = %{ $self->{"headers"}};
     unless(defined($header_map{"Host"})){
-	if($port eq 80){
+	if($port eq 443){
 	    $header_map{"Host"} = sprintf("%s", $host);
 	}else{
 	    $header_map{"Host"} = sprintf("%s:%d", $host, $port);
