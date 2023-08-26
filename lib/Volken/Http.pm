@@ -146,6 +146,7 @@ sub multipart{
 	    close($fh);
 	}
     }
+    $total_size -= 4;
     $header_map{"Content-Length"} = $total_size;
 
     my $request_head = "";
