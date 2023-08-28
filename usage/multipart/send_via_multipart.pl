@@ -18,8 +18,10 @@ my $part2 = Volken::Part->new;
 $part2->name("title")->value("dummy");
 $https->add_part($part2);
 
-my $part3 = Volken::Part->new;
-$part3->name("action")->value("info");
+my $part3 = Volken::Part->new(1);
+$part3->content_disposition("form-data")->name("action")
+    ->content_type("text/plain")
+    ->value("info");
 $https->add_part($part3);
 
 # $https->emulate_flag(1);
