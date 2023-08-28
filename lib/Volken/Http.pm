@@ -144,6 +144,19 @@ sub multipart{
 		$request_body .= $_;
 	    }
 	    close($fh);
+	}elsif("CUSTOM" eq $one_part->get("type")){
+	    if($one_part->get("value")){
+		$request_body .= $one_part->get("value");
+	    }
+	    my $filelocation = $one_part->get("filelocation");
+	    if($filelocation and -f $filelocation){
+		open(my $fh, "<", $filelocation);
+		binmode $fh;
+		while(<$fh>){
+		    $request_body .= $_;
+		}
+		close($fh);
+	    }
 	}
     }
     $total_size -= 4;
@@ -183,6 +196,19 @@ sub multipart{
 		    print $socket $_;
 		}
 		close($fh);
+	    }elsif("CUSTOM" eq $one_part->get("type")){
+		if($one_part->get("value")){
+		    print $socket $one_part->get("value");
+		}
+		my $filelocation = $one_part->get("filelocation");
+		if($filelocation and -f $filelocation){
+		    open(my $fh, "<", $filelocation);
+		    binmode $fh;
+		    while(<$fh>){
+			print $socket $_;
+		    }
+		    close($fh);
+		}
 	    }
 	}	
 
