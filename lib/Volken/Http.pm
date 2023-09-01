@@ -396,6 +396,10 @@ sub raw_request{
     my ($self) = @_;
     return $self->{"raw_request"};
 }
+sub raw_response{
+    my ($self) = @_;
+    return $self->{"raw_response"};
+}
 sub uriencode{
     my ($data) = @_;
     $data =~ s!([^/?#=a-zA-Z0-9_.-])!uc sprintf "%%%02x", ord($1)!eg;

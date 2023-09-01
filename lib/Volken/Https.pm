@@ -412,6 +412,10 @@ sub raw_request{
     my ($self) = @_;
     return $self->{"raw_request"};
 }
+sub raw_response{
+    my ($self) = @_;
+    return $self->{"raw_response"};
+}
 sub trim{
     my ($str) = @_;
     $str =~ s/^(\s*)//;
