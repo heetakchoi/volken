@@ -32,6 +32,13 @@ while(my $line = <$fh>){
     $line_number ++;
     chomp $line;
     $line =~ s/^\d+ //;
+
+    if($line =~ m/\(Start ([\d:]+)\)/){
+	my $head = $1;
+	my $body = substr($line, 0, index($line, "(Start ")-1);
+	$line = sprintf "%s %s", $head, $body;
+    }
+    
     if($line =~ m/^#/){
 	next;
     }elsif($line =~ m/^Separator "([^"]+)"$/){
