@@ -5,7 +5,8 @@ use warnings;
 
 use IO::Socket::SSL;
 use Mozilla::CA;
-use URI::Encode qw(uri_encode uri_decode);
+# use URI::Encode qw(uri_encode uri_decode);
+use URI::Encode;
 
 sub unchunk;
 sub trim;
@@ -28,6 +29,7 @@ sub get{
     my %param_map = %{ $self->{"params"}};
     my $req_uri = $self->{"url"};
     my $first_flag = 1;
+    my $uri = URI::Encode->new({double_encode=>0});
     foreach my $param_key (keys %param_map){
 	my $param_value = $param_map{$param_key};
 	if($first_flag){
@@ -36,7 +38,7 @@ sub get{
 	}else{
 	    $req_uri .= "&";
 	}
-	$req_uri .= sprintf "%s=%s", uri_encode($param_key), uri_encode($param_value);
+	$req_uri .= sprintf "%s=%s", $uri->encode($param_key), $uri->encode($param_value);
     }
     my $request_line = sprintf "GET %s HTTP/1.1\r\n", $req_uri;
     
