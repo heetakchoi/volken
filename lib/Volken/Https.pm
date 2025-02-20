@@ -90,7 +90,7 @@ sub get{
 	my @response_headers = split(/\r\n/, $response_head);
 	my $chunked_flag = 0;
 	foreach my $response_header (@response_headers){
-	    if($response_header =~ m/Transfer-Encoding/
+	    if($response_header =~ m/Transfer-Encoding/i
 	       && $response_header =~ m/chunked/){
 		$chunked_flag = 1;
 		last;
@@ -236,7 +236,7 @@ sub multipart{
 	my @response_headers = split(/\r\n/, $response_head);
 	my $chunked_flag = 0;
 	foreach my $response_header (@response_headers){
-	    if($response_header =~ m/Transfer-Encoding/
+	    if($response_header =~ m/Transfer-Encoding/i
 	       && $response_header =~ m/chunked/){
 		$chunked_flag = 1;
 		last;
@@ -336,7 +336,7 @@ sub post{
 	my @response_headers = split(/\r\n/, $response_head);
 	my $chunked_flag = 0;
 	foreach my $response_header (@response_headers){
-	    if($response_header =~ m/Transfer-Encoding/
+	    if($response_header =~ m/Transfer-Encoding/i
 	       && $response_header =~ m/chunked/){
 		$chunked_flag = 1;
 		last;
