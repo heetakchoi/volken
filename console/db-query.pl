@@ -45,6 +45,7 @@ my $dbn = sprintf "DBI:mysql:database=%s", $database;
 printf "- Now we try to connect Database: %s Username: %s\n", $database, $username unless($break_flag);
 
 my $dbh = DBI->connect($dbn, $username, $password) or die $DBI::errstr;
+if(defined($prop->get("db_setnames"))){$dbh->do(sprintf "SET NAMES '%s'", $prop->get("db_setnames")); }
 while(!$break_flag){
     my $input = "";
     my $line_number = 0;
