@@ -48,7 +48,8 @@ Volken::HTTP 에 대한 HTTPS 지원
 - 구분자로 나뉜 키-값 파일을 로드하여 키에 해당하는 값을 반환한다.
 ## Volken::Util
 - 유틸리티 모음이다.
-- pretty_time - 형식화된 시간을 반환하거나
+- pretty_kr_datetime - kr 형식화된 시간을 반환한다. (yyyy년 mm월 dd일 오전/오후 HH시 MM분 SS초)
+- sec_to_hms - 초를 기준으로 시/분/초로 환산한 시간을 반환한다.
 - percent_decode - URL 에 사용되는 %숫자 의 값을 디코딩한다.
 - trim - 앞뒤 공백을 제거한다.
 # usage
