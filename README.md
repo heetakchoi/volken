@@ -35,7 +35,7 @@ Json parser 이다.
 > blockquote, ul/li, h1-5, pre 태그를 지원한다.
 ## Volken::NumberOfCases
 경우의 수를 따져 순열, 조합의 경우로 원소를 재 배열한다.
-## Volken::PF Volken::QN Volken::ZN
+## Volken::PF, Volken::QN, Volken::ZN
 부동 소수점을 사용하지 않고 유리수 연산을 제공한다.
 > Volken::ZN - 이를 위해 먼저 정수와 정수의 사칙연산을 정의한다. \
 > Volken::PF - 나눗셈을 구현하기 위해 소인수 분해를 구현한다. \
@@ -52,34 +52,39 @@ Json parser 이다.
 > percent_decode - URL 에 사용되는 %숫자 의 값을 디코딩한다. \
 > trim - 앞뒤 공백을 제거한다.
 # usage
-## echo
-### Server.pl
+모듈에 대한 검증 코드
+### echo/Server.pl
 > Server socket 을 열고 대기한 후 들어온 요청에 대해 쓰레드를 생성하여 처리를 위임한다. \
 > 들어온 데이터를 그대로 돌려준다.
-### Client.pl
+### echo/Client.pl
 소켓을 열고 입력받은 문자열을 서버에 전송하고 응답내용을 프린트 한 후 종료한다.
-## multipart
-### send.html
+### multipart/send.html
 브라우저에서 multipart-form-data를 전송하도록 하는 예제
-### send_via_multipart.pl
+### multipart/send_via_multipart.pl
 lib/Volken::Part 객체를 사용하여 multipart-form-data 로 바이너리 파일을 전송한다.
-## number
+### number/*.pl
 Volken::PF, Volken::QN, Volken::ZN 을 이용하여 파이 계산, 사칙연산 계산 등을 시연
-## s-from
+### s-from/*
 file_sync.pl 을 통해 디렉토리 복제를 테스트하기 위한 디렉토리
-## data.json
+### data.json
 parse_json.pl 에서 테스트를 위해 준비한 json 파일
-## file_sync.pl
+### file_sync.pl
 Volken::File 의 기능을 검증하기 위해 s-from 디렉토리를 복제한다.
-## http.pl
+### http.pl
 Volken::HTTP, Volken::HTTPS 의 기능을 검증한다.
-## markup.html
+### markup.html
 Volken::Mark 의 기능을 검증하기 위해 준비한 템플릿
-## markup.pl
+### markup.pl
 Voken::Mark 의 기능을 사용하여 markup.html 의 내용을 Markup 한다.
-## nPr_nCr.pl
+### nPr_nCr.pl
 Volken::NumberOfCases 의 기능을 검증한다. 순열과 조합의 경우의 수를 나열한다.
-## parse_json.pl
+### parse_json.pl
 Volken::Json 의 기능을 검증한다.
-## prettyjson.pl
+### prettyjson.pl
 Json 포맷의 데이터를 입력받은 indent 를 사용하여 보기좋게 포맷팅한다.
+### wasm/*
+wasm 을 이용하여 브라우저에서 사칙연산을 동작한다.
+### web/ant_in_web.pl, web/ant.pl
+랭턴의 개미를 시뮬레이션한다.
+### web/article/*
+javascript 를 두 가지 (callback, promise) 방법으로 사용하여 client side 에서 글 목록-상세 이동을 구현한다.
