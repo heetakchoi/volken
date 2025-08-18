@@ -65,4 +65,21 @@ Json parser 이다.
 lib/Volken::Part 객체를 사용하여 multipart-form-data 로 바이너리 파일을 전송한다.
 ## number
 Volken::PF, Volken::QN, Volken::ZN 을 이용하여 파이 계산, 사칙연산 계산 등을 시연
-
+## s-from
+file_sync.pl 을 통해 디렉토리 복제를 테스트하기 위한 디렉토리
+## data.json
+parse_json.pl 에서 테스트를 위해 준비한 json 파일
+## file_sync.pl
+Volken::File 의 기능을 검증하기 위해 s-from 디렉토리를 복제한다.
+## http.pl
+Volken::HTTP, Volken::HTTPS 의 기능을 검증한다.
+## markup.html
+Volken::Mark 의 기능을 검증하기 위해 준비한 템플릿
+## markup.pl
+Voken::Mark 의 기능을 사용하여 markup.html 의 내용을 Markup 한다.
+## nPr_nCr.pl
+Volken::NumberOfCases 의 기능을 검증한다. 순열과 조합의 경우의 수를 나열한다.
+## parse_json.pl
+Volken::Json 의 기능을 검증한다.
+## prettyjson.pl
+Json 포맷의 데이터를 입력받은 indent 를 사용하여 보기좋게 포맷팅한다.
