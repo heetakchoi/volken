@@ -2,9 +2,9 @@
 설치 권한이 없거나 제한적인 시스템을 사용 중일 때 유용하게 사용할 수 있는 방법을 제공한다.
 > Perl 은 설치되어 있다고 가정한다.
 # 단독 실행 코드
-### console/log10_by_approximation.pl
+#### console/log10_by_approximation.pl
 로그표나 내장 로그함수를 사용하지 않고 상용로그의 근사값을 계산한다.
-### console/db-query.pl
+#### console/db-query.pl
 mysql client - perl 의 DBI 인터페이스를 사용하여 mysql 에 접근하여 SQL을 전송하고 결과를 반환받는다.
 ### console/mp3split.pl
 유튜브 플리와 같이 여러 곡이 하나의 mp3파일에 존재할 경우 mp3info.txt 에 지정된 재생 시간 정보를 기반으로 파일을 나누고 ID3 태그를 생성한다.
