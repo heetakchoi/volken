@@ -2,6 +2,8 @@
 설치 권한이 없거나 제한적인 시스템을 사용 중일 때 유용하게 사용할 수 있는 방법을 제공한다.
 > Perl 은 설치되어 있다고 가정한다.
 # 단독 실행 코드
+### csv_analyzer.pl (csv_file.csv, csv_exemption.txt)
+> , 로 분리된 csv 파일의 내용을 분석한다.
 ### console/log10_by_approximation.pl
 > 로그표나 내장 로그함수를 사용하지 않고 상용로그의 근사값을 계산한다.
 ### console/db-query.pl
