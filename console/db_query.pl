@@ -10,15 +10,15 @@ use Volken::Prop;
 sub trim;
 
 my $break_flag = 0;
-unless(-e "db-info.ini"){
+unless(-e "db_info.ini"){
     print "File not found. create db-info.ini as\n";
     print "database [DATABASENAME]\nusername [USER NAME]\npassword [PASSWORD]\n";
     die;
 }
-my $prop = Volken::Prop->new("db-info.ini", " ");
+my $prop = Volken::Prop->new("db_info.ini", " ");
 
 print "#"x80, "\n";
-print  "# Usage: perl db-query.pl [database name]\n";
+print  "# Usage: perl db_query.pl [database name]\n";
 
 my $database = shift;
 $database = $prop->get("database") unless(defined($database));
