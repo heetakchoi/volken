@@ -94,7 +94,7 @@ foreach my $one_column_index (sort {$a<=>$b} keys %hash){
     }
     print  "-"x20, "\n";
     printf "[%s] (%dth of %d)\n", $column_names[$one_column_index], $one_column_index+1, scalar @column_names;
-    printf "    %s: %.1f%% %d/%d\n", $info_names[0], 100 * $fill_count/$row_number, $row_number, $fill_count;
+    printf "    %s: %.1f%% %d/%d\n", $info_names[0], 100 * $fill_count/$row_number, $fill_count, $row_number;
     if($number_count){
 	$mean = sprintf "%.1f", $sum / $number_count;
 	printf "    %s: %s\n", $info_names[1], $mean;
