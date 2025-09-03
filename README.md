@@ -45,6 +45,8 @@ Volken::HTTP 에 대한 HTTPS 지원
 ## Volken::Part
 - Multipart form data 로 바이너리파일을 전송하기 위해 사용하는 Multipart 구조체를 생성한다.
 - usage/multipart/send_via_multipart.pl 에서 사용한다.
+## Volken::Progress
+- 텍스트 형식 파일을 열 때 먼저 wc -l 로 전체 row 수를 알아낸 후 얼마나 읽었는지 비율을 측정한다.
 ## Volken::Prop
 - java 의 Properties 객체에 상응한다.
 - 구분자로 나뉜 키-값 파일을 로드하여 키에 해당하는 값을 반환한다.
@@ -85,6 +87,8 @@ Volken::HTTP 에 대한 HTTPS 지원
 > Volken::Json 의 기능을 검증한다.
 ### prettyjson.pl
 > Json 포맷의 데이터를 입력받은 indent 를 사용하여 보기좋게 포맷팅한다.
+### progress.pl
+> 텍스트 형식 파일을 열고 라인을 읽어들일 때 몇 번째 라인인지를 보고 몇 퍼센트인지 반환한다.
 ### wasm/*
 > wasm 을 이용하여 브라우저에서 사칙연산을 동작한다.
 ### web/ant_in_web.pl, web/ant.pl
