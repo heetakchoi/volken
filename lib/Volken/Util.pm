@@ -61,5 +61,15 @@ sub trim{
     return $data;
 }
 
+sub commify{
+    my ($self, $number) = @_;
+    if ($number =~ /^\d+(\.\d+)?$/) {
+        $number =~ s/^(\d+)(?=(\d{3})+(?!\d))/$1,/g;
+    }
+    $number = reverse $number;
+    $number =~ s/(\d{3})(?=\d)/$1,/g;
+    return scalar reverse $number;
+}
+
 return "Util.pm";
 
