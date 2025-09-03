@@ -4,29 +4,25 @@ use strict;
 use warnings;
 
 sub new{
-    my ($class, $file_location, $min, $granularity) = @_;
+    my ($class, $file_location, $granularity_min_size, $granularity_count) = @_;
     die "존재하지 않는 파일" unless(-e $file_location);
 
     my $total = `wc -l < $file_location`;
     chomp($total);
-    $min = 10_000 unless(defined($min));
-    $granularity = 30 unless(defined($granularity));
+    $granularity_min_size = 1_000_000 unless(defined($granularity_min_size));
+    $granularity_count = 30 unless(defined($granularity_count));
 
-    
     my $self = {};
     $self->{"util"} = Volken::Util->new();
     $self->{"total"} = $total;
-    $self->{"min"} = $min;
-    $self->{"granularity"} = $granularity;
-
-    my $display_flag = 1;
-    $display_flag = 0 if($total < $min);
-    my $check_size = $total / $granularity;
-    $check_size = $min if($check_size < $min);
-    
-    $self->{"display_flag"} = $display_flag;
+    $self->{"granularity_min_size"} = $granularity_min_size;
+    $self->{"granularity_count"} = $granularity_count;
+    my $check_size = $total / $granularity_count;
+    $check_size = $granularity_min_size if($check_size > $granularity_min_size);
     $self->{"check_size"} = $check_size;
-
+    my $display_flag = 1;
+    $display_flag = 0 if($total<$granularity_min_size);
+    $self->{"display_flag"} = $display_flag;
     $self->{"line_number"} = 0;
     
     bless($self, $class);
