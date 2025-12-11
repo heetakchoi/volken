@@ -144,14 +144,14 @@ sub get_html{
 	    }elsif($before_status eq "ulist"){
 		# 이전 줄이 u리스트였으면 리스트로 문단이 끝났다고 보고 ul 과 div 를 차례로 닫는다.
 		$before_line =~ s/\s+$//;
-		$content .= sprintf "    <li>%s</li>\n", substr($before_line, index($before_line, ".")+2);
+		$content .= sprintf "    <li>%s</li>\n", substr($before_line, 2);
 		$content .= "  </ul>\n";
 		$content .= "</div>\n";
 
     	    }elsif($before_status eq "olist"){
 		# 이전 줄이 o리스트였으면 리스트로 문단이 끝났다고 보고 ol 과 div 를 차례로 닫는다.
 		$before_line =~ s/\s+$//;
-		$content .= sprintf "    <li>%s</li>\n", substr($before_line, 2);
+		$content .= sprintf "    <li>%s</li>\n", substr($before_line, index($before_line, ".")+2);
 		$content .= "  </ol>\n";
 		$content .= "</div>\n";
 		
