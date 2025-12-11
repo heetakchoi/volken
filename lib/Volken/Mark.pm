@@ -6,6 +6,7 @@ use warnings;
 # 문법
 # '| ' 로 시작하면 blockquote
 # '- ' 로 시작하면 ul li
+# '숫자. ' 로 시작하면 ol li
 # 빈 문자열은 div 로 구분
 # '<pre>', '</pre>' 로 시작하면 verbatim 모드 시작/종료
 # 'h숫자. ' 로 시작하면 해당 라인을 숫자에 해당하는 h태그로 전환
@@ -79,12 +80,21 @@ sub get_html{
 		$content .= sprintf "    %s\n", substr($before_line, 2);
 		$content .= "  </blockquote>\n";
 		$content .= "</div>\n";
+
 	    }elsif($before_status eq "ulist"){
 		# 이전 줄이 u리스트였으면 리스트로 문단이 끝났다고 보고 ul 과 div 를 차례로 닫는다.
 		$before_line =~ s/\s+$//;
 		$content .= sprintf "    <li>%s</li>\n", substr($before_line, 2);
 		$content .= "  </ul>\n";
 		$content .= "</div>\n";
+
+    	    }elsif($before_status eq "olist"){
+		# 이전 줄이 o리스트였으면 리스트로 문단이 끝났다고 보고 ol 과 div 를 차례로 닫는다.
+		$before_line =~ s/\s+$//;
+		$content .= sprintf "    <li>%s</li>\n", substr($before_line, index($before_line, ".")+2);
+		$content .= "  </ol>\n";
+		$content .= "</div>\n";
+		
 	    }else{
 		# 고려하지 않은 경우.
 		$content .= "[unknown 0]<br />\n";
@@ -130,12 +140,21 @@ sub get_html{
 		$content .= sprintf "    %s\n", substr($before_line, 2);
 		$content .= "  </blockquote>\n";
 		$content .= "</div>\n";
+		
 	    }elsif($before_status eq "ulist"){
 		# 이전 줄이 u리스트였으면 리스트로 문단이 끝났다고 보고 ul 과 div 를 차례로 닫는다.
 		$before_line =~ s/\s+$//;
-		$content .= sprintf "    <li>%s</li>\n", substr($before_line, 2);
+		$content .= sprintf "    <li>%s</li>\n", substr($before_line, index($before_line, ".")+2);
 		$content .= "  </ul>\n";
 		$content .= "</div>\n";
+
+    	    }elsif($before_status eq "olist"){
+		# 이전 줄이 o리스트였으면 리스트로 문단이 끝났다고 보고 ol 과 div 를 차례로 닫는다.
+		$before_line =~ s/\s+$//;
+		$content .= sprintf "    <li>%s</li>\n", substr($before_line, 2);
+		$content .= "  </ol>\n";
+		$content .= "</div>\n";
+		
 	    }else{
 		# 고려하지 않은 경우.
 		$content .= "[unknown 1]<br />\n";
@@ -174,8 +193,15 @@ sub get_html{
 	    }elsif($before_status eq "ulist"){
 		# 이전 문자열이 u리스트였다면 ul 을 끝내고 인용 라인을 시작할 준비를 한다.
 		$before_line =~ s/\s+$//;
-		$content .= sprintf "    <li>%s</li>\n", substr($before_line, 2);
+		$content .= sprintf "    <li>%s</li>\n", substr($before_line, index($before_line, ".")+2);
 		$content .= "  </ul>\n";
+		$content .= "  <blockquote>\n";
+
+    	    }elsif($before_status eq "olist"){
+		# 이전 문자열이 o리스트였다면 ol 을 끝내고 인용 라인을 시작할 준비를 한다.
+		$before_line =~ s/\s+$//;
+		$content .= sprintf "    <li>%s</li>\n", substr($before_line, 2);
+		$content .= "  </ol>\n";
 		$content .= "  <blockquote>\n";
 
 	    }else{
@@ -218,7 +244,14 @@ sub get_html{
 	    }elsif($before_status eq "ulist"){
 		# 이전 문자열이 u리스트이면 li 를 추가한다.
 		$before_line =~ s/\s+$//;
-		$content .= sprintf "    <li>%s</li>\n", substr($before_line, 2);
+		$content .= sprintf "    <li>%s</li>\n", substr($before_line, 2 );
+
+    	    }elsif($before_status eq "olist"){
+		# 이전 문자열이 o리스트이면 o리스트를 끝내고 u리스트를 시작할 준비를 한다.
+    		$before_line =~ s/\s+$//;
+		$content .= sprintf "    <li>%s</li>\n", substr($before_line, index($before_line,".")+2);
+		$content .= "  </ol>\n";
+		$content .= "  <ul>\n";
 
 	    }else{
 		# 고려하지 않은 경우
@@ -227,6 +260,55 @@ sub get_html{
 	    # 현 u리스트 상태를 이전 라인 상태로 저장한다.
 	    $before_line = $line;
 	    $before_status = "ulist";
+
+    	}elsif($line =~ /^\d+. /){
+	    # o리스트 문자열을 만났는데
+	    if($before_status eq "INIT"){
+		# 이전 문자열이 없고 첫 상황이면
+		# 문단이 o리스트로 시작되었다고 보고 div, ol을 연다.
+		$content .= "<div>\n";
+		$content .= "  <ol>\n";
+
+	    }elsif($before_status eq "blank"){
+		# 이전 문자열이 공백이었다면
+		# 문단이 o리스트로 시작되었다고 보고 div, ol을 연다
+		$content .= "<div>\n";
+		$content .= "  <ol>\n";
+
+	    }elsif($before_status eq "normal"){
+		# 이전 문자열이 일반이었으면 기존 문단에 o리스트가 추가되었다고 가정한다.
+		# 이전 문자열은 그냥 추가하고 아래에 붙여서 o리스트를 시작할 준비를 한다.
+		$before_line =~ s/\s+$//;
+		$content .= proc_heading($before_line);
+		$content .= "\n";
+		$content .= "  <ol>\n";
+		
+	    }elsif($before_status eq "quote"){
+		# 이전 문자열이 인용이라면 quote를 끝내고 o리스트를 시작할 준비를 한다.
+		$before_line =~ s/\s+$/\n/;
+		$content .= sprintf "    %s", substr($before_line, 2);
+		$content .= "  </blockquote>\n";
+		$content .= "  <ol>\n";
+
+    	    }elsif($before_status eq "ulist"){
+		# 이전 문자열이 u리스트이면 u리스트를 끝내고 o리스트를 시작할 준비를 한다.
+		$before_line =~ s/\s+$//;
+		$content .= sprintf "    <li>%s</li>\n", substr($before_line, 2);
+		$content .= "  </ul>\n";
+		$content .= "  <ol>\n";
+
+	    }elsif($before_status eq "olist"){
+		# 이전 문자열이 o리스트이면 li 를 추가한다.
+		$before_line =~ s/\s+$//;
+		$content .= sprintf "    <li>%s</li>\n", substr($before_line, index($before_line,".")+2);
+
+	    }else{
+		# 고려하지 않은 경우
+		$content .= "[unknown 4]<br />\n";
+	    }
+	    # 현 u리스트 상태를 이전 라인 상태로 저장한다.
+	    $before_line = $line;
+	    $before_status = "olist";
 	    
 	}else{
 	    # 특수 상태 - 인용, u리스트, 공백 이 아닌 경우는 일반 문장이라고 가정한다.
@@ -262,8 +344,14 @@ sub get_html{
 		$content .= sprintf "    <li>%s</li>\n", substr($before_line, 2);
 		$content .= "  </ul>\n";
 
+	    }elsif($before_status eq "olist"){
+		# o리스트가 끝나고 일반 문장이 왔다고 보고 문단을 유지한 채로 ol을 종료한다.
+		$before_line =~ s/\s+$//;
+		$content .= sprintf "    <li>%s</li>\n", substr($before_line, index($before_line, ".")+2);
+		$content .= "  </ol>\n";
+
 	    }else{
-		$content .= "[unknown 4]<br />\n";
+		$content .= "[unknown 5]<br />\n";
 	    }
 	    $before_line = $line;
 	    $before_status = "normal";
@@ -292,8 +380,15 @@ sub get_html{
     }elsif($before_status eq "ulist"){
 	# u리스트로 끝나면 ul 과 문단을 닫는다.
 	$before_line =~ s/\s+$//;
-	$content .= sprintf "    <li>%s</li>\n", substr($before_line, 2);
+	$content .= sprintf "    <li>%s</li>\n", substr($before_line, 2);	
 	$content .= "  </ul>\n";
+	$content .= "</div>\n";
+
+    }elsif($before_status eq "olist"){
+	# o리스트로 끝나면 ol 과 문단을 닫는다.
+	$before_line =~ s/\s+$//;
+	$content .= sprintf "    <li>%s</li>\n", substr($before_line, index($before_line,".")+2);
+	$content .= "  </ol>\n";
 	$content .= "</div>\n";
 	
     }else{
