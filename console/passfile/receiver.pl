@@ -47,7 +47,7 @@ while(1){
 	    $received_size += $bytes_read;
 
 	    $receiving_count ++;
-	    if($receiving_count % 10_000 == 0){
+	    if($receiving_count % 100_000 == 0){
 		printf "receiving %dM\n", $received_size/1_024_000;
 	    }
 	}
