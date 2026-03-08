@@ -1,4 +1,6 @@
 usage/s-to
 console/db-info.ini
 fanel/client/info.ini
+fanel/client/download
 fanel/server/info.ini
+fanel/server/upload
