@@ -142,6 +142,7 @@ while(1){
 	}
 	close($socket);
 	printf "P[%s] End\n", $$;
+	exit;
     }
 }
 
