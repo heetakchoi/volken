@@ -50,7 +50,7 @@ while(1){
 	    if($result){
 		chomp($result);
 	    }else{
-		$result = sprintf "백틱 호출 오류 발생";
+		$result = "백틱 호출 결과 없음";
 	    }
 
 	}elsif($type eq 'B'){
