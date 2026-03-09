@@ -34,6 +34,7 @@ printf "Listen port [%d]\n", $port;
 printf "Upload directory [%s]\n", $file_dir;
 
 my $fanel = Volken::Fanel->new();
+$SIG{CHLD} = 'IGNORE';
 while(1){
     my $socket = $server_socket->accept();
     my $pid = fork();
