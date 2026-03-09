@@ -19,38 +19,33 @@ unless(-e "info.ini"){
 
 my $prop = Volken::Prop->new("info.ini", " ");
 my ($port, $file_dir) = $prop->gets("port", "file_dir");
-
 unless(-d $file_dir){
     mkdir $file_dir;
 }
-
-
 my $server_socket = IO::Socket::INET->new(
     LocalPort => $port,
     Proto => "tcp", Listen => 5, Reuse => 1);
-
 print  "Fanel Remote Service start.\n";
 printf "Listen port [%d]\n", $port;
 printf "Upload directory [%s]\n", $file_dir;
-
 my $fanel = Volken::Fanel->new();
 $SIG{CHLD} = 'IGNORE';
 while(1){
     my $socket = $server_socket->accept();
     my $pid = fork();
     if($pid == 0){
-	printf "P[%s] Start\n", $$;
 	my $buffer;
 	my $bytes_read = sysread($socket, $buffer, 1+4);
 	my ($type, $payload_length) = unpack("A N", $buffer);
 	my $payload;
 	my $result;
 	my $skip_send_flag = 0;
+	printf "[%s-STT] type:%s\n", $$, $type;
 	
 	if($type eq 'A'){
 	    $bytes_read = sysread($socket, $buffer, $payload_length);
 	    $payload = $buffer;
-
+	    printf "[%s-REQ] %s\n", $$, $payload;
 	    if("pwd" eq $payload){
 		$result = getcwd();
 	    }
@@ -64,6 +59,8 @@ while(1){
 	    my $payload_1 = $buffer;
 	    $bytes_read = sysread($socket, $buffer, $payload_length_2);
 	    my $payload_2 = $buffer;
+
+	    printf "[%s-REQ] %s %s\n", $$, $payload_1, $payload_2;
 
 	    if("ls" eq $payload_1){
 		my $cmd = sprintf "ls %s", $payload_2;
@@ -105,6 +102,7 @@ while(1){
 	    $bytes_read = sysread($socket, $buffer, $payload_length_3);
 	    my $payload_3 = $buffer;
 
+	    printf "[%s-REQ] %s %s %s\n", $$, $payload_1, $payload_2, $payload_3;
 	    if("+" eq $payload_1){
 		$result = $payload_2 + $payload_3;
 	    }elsif("upload" eq $payload_1){
@@ -128,11 +126,11 @@ while(1){
 		    last if($bytes_read_sum >= $file_size);
 		}
 		close($fh);
-		$result = sprintf "P[%s] Upload %s (%d) completed.", $$, $file_name, -s $file_location;
+		$result = sprintf "Upload %s (%d) completed.", $file_name, -s $file_location;
 		printf "%s\n", $result;
 	    }
 	}else{
-	    print  "불완전한 요청\n";
+	    printf "[%s-INF] 불완전한 요청\n", $$;
 	    $skip_send_flag = 1;
 	}
 	unless($skip_send_flag){
@@ -140,9 +138,10 @@ while(1){
 	    $payload_length = length($payload);
 	    my $packet = pack("A N A*", 'A', $payload_length, $payload);
 	    syswrite($socket, $packet, length($packet));
+	    printf "[%s-RES] %s\n", $$, $payload;
 	}
 	close($socket);
-	printf "P[%s] End\n", $$;
+	printf "[%s-END]\n", $$;
 	exit;
     }
 }
