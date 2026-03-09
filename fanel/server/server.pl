@@ -47,7 +47,12 @@ while(1){
 	    $payload = $buffer;
 	    printf "[%s-REQ] %s\n", $$, $payload;
 	    $result = `$payload`;
-	    chomp($result);
+	    if($result){
+		chomp($result);
+	    }else{
+		$result = sprintf "백틱 호출 오류 발생";
+	    }
+
 	}elsif($type eq 'B'){
 	    my $payload_length_1 = $payload_length;
 	    $bytes_read = sysread($socket, $buffer, 4);
