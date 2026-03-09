@@ -25,13 +25,10 @@ unless(-d $file_dir){
 }
 
 my %command_hash = (
-    "pwd"=>"인자 없이 호출. 리모트 서버의 현 디렉토리 위치 반환",
-    "ls"=>"ls [옵션이나 디렉토리], 리모트 서버의 ls 명령 결과",
-    "upload"=>"upload [로컬 파일 위치], 리모트 서버로 파일을 전송",
-    "download"=>"download [리모트 파일 위치], 리모트 서버의 파일을 로컬로 전송",
-    "+"=>"+ [숫자 1] [숫자 2], 인자의 합을 반환",
+    "quit"=>"종료",
     "help"=>"사용할 수 있는 커맨드 종류 및 안내",
-    "quit"=>"종료"
+    "upload"=>"upload [로컬 파일 위치], 리모트 서버로 파일을 전송",
+    "download"=>"download [리모트 파일 위치], 리모트 서버의 파일을 로컬로 전송"
     );
 
 printf "Terminal version %s\n", "0.1";
@@ -47,15 +44,11 @@ while(1){
     my $command_line = <STDIN>;
     $command_line =~ s/^\s+|\s+$//g;
     my ($command, @args) = split(/\s/, $command_line);
-
     unless($command){
 	next;
     }
+    
     last if("quit" eq $command);
-    unless($command_hash{$command}){
-	printf "이해할 수 없는 명령입니다. [%s]\n", $command_line;
-	next;
-    }
     if("help" eq $command){
 	foreach my $one_key (keys %command_hash){
 	    printf "  <%s> %s\n", $one_key, $command_hash{$one_key};
@@ -66,14 +59,7 @@ while(1){
     my $socket = IO::Socket::INET->new(
 	PeerAddr => $host, PeerPort => $port, Proto => "tcp");
 
-    if("pwd" eq $command){
-	$fanel->send_a_type($socket, $command);
-    }elsif("ls" eq $command){
-	my $option = "-al";
-	$option = $args[0] if($args[0]);
-	$option .= " ".$args[1] if($args[1]);
-	$fanel->send_b_type($socket, $command, $option);
-    }elsif("upload" eq $command){
+    if("upload" eq $command){
 	my $file_location = substr($command_line, length($command) +1);
 	if(-f $file_location){
 	    my $file_size = -s $file_location;
@@ -128,12 +114,8 @@ while(1){
 	    printf "Download failure: %s\n", $payload_2;
 	}
 	$skip_receive_flag = 1;
-	
-    }elsif("+" eq $command){
-	$fanel->send_c_type($socket, $command, @args);
     }else{
-	printf "구현되지 않은 명령입니다. [%s]\n", $command_line;
-	$skip_receive_flag = 1;
+	$fanel->send_a_type($socket, $command_line);
     }
 
     unless($skip_receive_flag){
