@@ -47,7 +47,7 @@ while(1){
 	    $payload = $buffer;
 	    printf "[%s-REQ] %s\n", $$, $payload;
 	    $result = `$payload`;
-	    
+	    chomp($result);
 	}elsif($type eq 'B'){
 	    my $payload_length_1 = $payload_length;
 	    $bytes_read = sysread($socket, $buffer, 4);
@@ -60,13 +60,7 @@ while(1){
 
 	    printf "[%s-REQ] %s %s\n", $$, $payload_1, $payload_2;
 
-	    if("ls" eq $payload_1){
-		my $cmd = sprintf "ls %s", $payload_2;
-		$result = `$cmd`;
-	    }elsif("cat" eq $payload_1){
-		my $cmd = sprintf "cat %s", $payload_2;
-		$result = `$cmd`;
-	    }elsif("download" eq $payload_1){
+	    if("download" eq $payload_1){
 		my $file_location = $payload_2;
 		if(-f $file_location){
 		    my $file_size = -s $file_location;
@@ -104,9 +98,7 @@ while(1){
 	    my $payload_3 = $buffer;
 
 	    printf "[%s-REQ] %s %s %s\n", $$, $payload_1, $payload_2, $payload_3;
-	    if("+" eq $payload_1){
-		$result = $payload_2 + $payload_3;
-	    }elsif("upload" eq $payload_1){
+	    if("upload" eq $payload_1){
 		my $file_name = basename($payload_2);
 		my $file_location = sprintf "%s/%s", $file_dir, $file_name;
 		my $file_size = $payload_3;
@@ -128,7 +120,6 @@ while(1){
 		}
 		close($fh);
 		$result = sprintf "Upload %s (%d) completed.", $file_name, -s $file_location;
-		printf "%s\n", $result;
 	    }
 	}else{
 	    printf "[%s-INF] 불완전한 요청\n", $$;
