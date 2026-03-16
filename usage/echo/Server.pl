@@ -19,7 +19,7 @@ if($delay < 1){
     $delay = 0;
 }
 
-my $server_socket = new IO::Socket::INET (
+my $server_socket = IO::Socket::INET->new(
     LocalHost => "0.0.0.0",
     LocalPort => $local_port,
     Proto => "tcp",

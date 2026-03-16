@@ -6,3 +6,4 @@ fanel/server/*.ini
 fanel/server/upload
 fanel/server/nohup.*
 fanel/server/*.out
+.claude

@@ -13,7 +13,7 @@ my $p = Volken::Prop->new("../../usage/echo/info.ini");
 my ($peer_host, $peer_port) = ($p->get("peer_host"), $p->get("peer_port"));
 
 # create a connecting socket
-my $socket = new IO::Socket::INET (
+my $socket = IO::Socket::INET->new(
     PeerHost => $peer_host,
     PeerPort => $peer_port,
     Proto => "tcp"
