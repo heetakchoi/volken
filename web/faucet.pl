@@ -60,17 +60,23 @@ print  "  <input type=\"file\" name=\"upload\" />\n";
 print  "  <input type=\"submit\" name=\"submit\" value=\"upload\" />\n";
 print  "</form>\n";
 print  "<table>\n";
-print  "  <th><th>file</th><th></th></th>\n";
-foreach my $one_file (@files){
-    my $base_name = $one_file;
-    $base_name =~ s/^.*[\/\\]//;
-    printf "  <tr>\n";
-    printf "    <td><a href=\"%s\">%s</a></td>\n", $one_file, $one_file;
-    printf "    <td><form method=\"post\" action=\"faucet.pl\" style=\"display:inline\" onsubmit=\"return confirm('Delete %s?')\">\n", $base_name;
-    printf "      <input type=\"hidden\" name=\"delete\" value=\"%s\" />\n", $base_name;
-    printf "      <input type=\"submit\" value=\"delete\" />\n";
-    printf "    </form></td>\n";
-    printf "  </tr>\n";
+print  "  <thead><tr><th>file</th><th></th></tr></thead>\n";
+print  "  <tbody>\n";
+if(@files){
+    foreach my $one_file (@files){
+        my $base_name = $one_file;
+        $base_name =~ s/^.*[\/\\]//;
+        printf "  <tr>\n";
+        printf "    <td><a href=\"%s\">%s</a></td>\n", $one_file, $base_name;
+        printf "    <td><form method=\"post\" action=\"faucet.pl\" onsubmit=\"return confirm('Delete %s?')\">\n", $base_name;
+        printf "      <input type=\"hidden\" name=\"delete\" value=\"%s\" />\n", $base_name;
+        printf "      <input type=\"submit\" value=\"delete\" />\n";
+        printf "    </form></td>\n";
+        printf "  </tr>\n";
+    }
+} else {
+    print  "  <tr><td colspan=\"2\" class=\"empty-message\">No files uploaded yet.</td></tr>\n";
 }
+print  "  </tbody>\n";
 print  "</table>\n";
 print $q->end_html;
