@@ -45,7 +45,7 @@ print  "</form>\n";
 print  "<table>\n";
 print  "  <th><th>file</th></th>\n";
 foreach my $one_file (@files){
-    printf "  <tr><td>%s</td></tr>\n", $one_file;
+    printf "  <tr><td><a href=\"%s\">%s</a></td></tr>\n", $one_file, $one_file;
 }
 print  "</table>\n";
 print $q->end_html;
