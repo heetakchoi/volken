@@ -29,11 +29,17 @@ sub new{
     bless($self, $class);
     return $self;
 }
-
+sub get_first_line{
+	my ($self) = @_;
+	return $self->{"first_line"};
+}
 sub load_file{
     my ($self, $file) = @_;
     my $text = "";
     open(my $fh, "<", $file);
+	my $first_line = <$fh>;
+	$self->{"first_line"} = $first_line;
+	$text .= $first_line;
     while(<$fh>){
 	$text .= $_;
     }
