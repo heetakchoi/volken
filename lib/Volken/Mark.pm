@@ -36,7 +36,7 @@ sub get_first_line{
 sub load_file{
     my ($self, $file) = @_;
     my $text = "";
-    open(my $fh, "<", $file);
+    open(my $fh, "<:utf8", $file);
 	my $first_line = <$fh>;
 	$self->{"first_line"} = $first_line;
 	$text .= $first_line;
@@ -56,14 +56,14 @@ sub get_html{
     my ($self) = @_;
     my $text = $self->{"data"};
 
-    open(my $fh, "<", \$text);
+    my @lines = split(/(?<=\n)/, $text);
     my $content = "";
     my $before_line = undef;
     my $before_status = "INIT";
 
     my $pre_flag = 0;
     
-    while(my $line = <$fh>){
+    foreach my $line (@lines){
 	if($line =~ /^<pre>/i){
 	    # verbatim 모드가 시작되면 기존 문맥은 종료시킨다.
 	    if($before_status eq "INIT"){
@@ -157,7 +157,11 @@ sub get_html{
     	    }elsif($before_status eq "olist"){
 		# 이전 줄이 o리스트였으면 리스트로 문단이 끝났다고 보고 ol 과 div 를 차례로 닫는다.
 		$before_line =~ s/\s+$//;
-		$content .= sprintf "    <li>%s</li>\n", substr($before_line, index($before_line, ".")+2);
+		my $dot_idx = index($before_line, ".");
+		my $li_text = ($dot_idx != -1 && length($before_line) > $dot_idx + 2) 
+		              ? substr($before_line, $dot_idx + 2) 
+		              : $before_line;
+		$content .= sprintf "    <li>%s</li>\n", $li_text;
 		$content .= "  </ol>\n";
 		$content .= "</div>\n";
 		
@@ -306,7 +310,11 @@ sub get_html{
 	    }elsif($before_status eq "olist"){
 		# 이전 문자열이 o리스트이면 li 를 추가한다.
 		$before_line =~ s/\s+$//;
-		$content .= sprintf "    <li>%s</li>\n", substr($before_line, index($before_line,".")+2);
+		my $dot_idx = index($before_line, ".");
+		my $li_text = ($dot_idx != -1 && length($before_line) > $dot_idx + 2) 
+		              ? substr($before_line, $dot_idx + 2) 
+		              : $before_line;
+		$content .= sprintf "    <li>%s</li>\n", $li_text;
 
 	    }else{
 		# 고려하지 않은 경우
@@ -353,7 +361,11 @@ sub get_html{
 	    }elsif($before_status eq "olist"){
 		# o리스트가 끝나고 일반 문장이 왔다고 보고 문단을 유지한 채로 ol을 종료한다.
 		$before_line =~ s/\s+$//;
-		$content .= sprintf "    <li>%s</li>\n", substr($before_line, index($before_line, ".")+2);
+		my $dot_idx = index($before_line, ".");
+		my $li_text = ($dot_idx != -1 && length($before_line) > $dot_idx + 2) 
+		              ? substr($before_line, $dot_idx + 2) 
+		              : $before_line;
+		$content .= sprintf "    <li>%s</li>\n", $li_text;
 		$content .= "  </ol>\n";
 
 	    }else{
@@ -401,7 +413,6 @@ sub get_html{
 	# 이 경우는 예상하지 않은 경우이므로 오류를 낸다.
 	die "이런 경우는 없어야 한다.";
     }
-    close($fh);
 
     return $content;
 }
