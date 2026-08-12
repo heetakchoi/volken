@@ -1,0 +1,5 @@
+# Perl::Critic 프로젝트 설정
+# 스트리밍 방식으로 파일핸들을 열어두고 출력하는 스크립트가 많아
+# open~close 허용 구간을 기본값(9줄)에서 100줄로 늘림.
+[InputOutput::RequireBriefOpen]
+lines = 100

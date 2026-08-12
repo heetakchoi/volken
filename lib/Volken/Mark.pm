@@ -417,4 +417,4 @@ sub get_html{
     return $content;
 }
 
-return "Volken::Mark";
+1;
