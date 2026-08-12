@@ -6,7 +6,8 @@ use IO::Socket::INET;
 use Cwd;
 use File::Basename;
 
-use lib "../../lib";
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
 use Volken::Prop;
 use Volken::Fanel;
 

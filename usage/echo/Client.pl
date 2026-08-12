@@ -4,7 +4,8 @@ use strict;
 use warnings;
 use IO::Socket::INET;
 
-use lib "../../lib";
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
 use Volken::Prop;
 
 $| = 1;

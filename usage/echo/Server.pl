@@ -6,7 +6,8 @@ use IO::Socket::INET;
 use threads;
 use threads::shared;
 
-use lib "../../lib";
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
 use Volken::Prop;
 
 sub echo;

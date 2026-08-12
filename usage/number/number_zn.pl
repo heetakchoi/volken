@@ -3,7 +3,8 @@
 use strict;
 use warnings;
 
-use lib "../../lib";
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
 use Volken::ZN;
 
 my ($left, $right, $result, $quotient, $remainder);

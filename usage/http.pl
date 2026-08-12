@@ -4,7 +4,8 @@ use strict;
 use warnings;
 
 use Encode;
-use lib "../lib";
+use FindBin;
+use lib "$FindBin::Bin/../lib";
 use Volken::Http;
 use Volken::Https;
 

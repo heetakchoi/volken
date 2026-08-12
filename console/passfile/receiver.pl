@@ -5,7 +5,8 @@ use warnings;
 
 use IO::Socket::INET;
 
-use lib "../../lib";
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
 use Volken::Prop;
 
 unless(-e "receive_info.ini"){

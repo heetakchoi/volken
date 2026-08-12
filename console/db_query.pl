@@ -4,7 +4,8 @@ use strict;
 use warnings;
 
 use DBI;
-use lib "../lib";
+use FindBin;
+use lib "$FindBin::Bin/../lib";
 use Volken::Prop;
 
 sub trim;
