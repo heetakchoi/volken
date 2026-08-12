@@ -36,7 +36,7 @@ sub get_first_line{
 sub load_file{
     my ($self, $file) = @_;
     my $text = "";
-    open(my $fh, "<:utf8", $file);
+    open(my $fh, "<:encoding(UTF-8)", $file);
 	my $first_line = <$fh>;
 	$self->{"first_line"} = $first_line;
 	$text .= $first_line;
