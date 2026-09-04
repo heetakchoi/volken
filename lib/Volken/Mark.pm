@@ -13,7 +13,7 @@ use warnings;
 
 sub proc_heading{
     my ($line) = @_;
-    if($line =~ /^h(\d). /i){
+    if($line =~ /^h(\d)\. /i){
 	my $heading = sprintf "h%d", $1;
 	$line = substr($line, 4);
 	$line =~ s/^\s+|\s+$//;
@@ -271,7 +271,7 @@ sub get_html{
 	    $before_line = $line;
 	    $before_status = "ulist";
 
-    	}elsif($line =~ /^\d+. /){
+    	}elsif($line =~ /^\d+\. /){
 	    # o리스트 문자열을 만났는데
 	    if($before_status eq "INIT"){
 		# 이전 문자열이 없고 첫 상황이면
